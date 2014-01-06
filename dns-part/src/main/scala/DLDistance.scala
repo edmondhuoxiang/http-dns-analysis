@@ -1,6 +1,6 @@
 package org.edmond.DLDistance
 
-import org.apache.hadoop.filexache.DistributedCache
+import org.apache.hadoop.filecache.DistributedCache
 import scala.math._
 
 import spark.SparkContext
