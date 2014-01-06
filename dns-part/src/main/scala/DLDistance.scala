@@ -49,7 +49,7 @@ class DLDistance{
 
 	//val keyboard = initialize();
   	def initialize(): scala.collection.mutable.HashMap[Char, Array[Char]] = {
-    	val lines = scala.io.Source.fromFile("/Users/edmond/Typosquatting/src/main/scala/keyboard-dist").getLines.toList
+    	val lines = scala.io.Source.fromFile("./src/main/scala/keyboard-dist").getLines.toList
     	//val lines = scala.io.Source.fromFile("/home/xiang/Typosquatting/src/main/scala/keyboard-dist").getLines.toList
     	val set = new scala.collection.mutable.HashMap[Char, Array[Char]]()
     	for(line <- lines){
