@@ -154,5 +154,5 @@ class ParseDNS(){
 			println(line)
 		})
 	}
-*/
-}
+
+}*/
