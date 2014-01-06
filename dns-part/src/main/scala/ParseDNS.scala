@@ -136,7 +136,7 @@ class ParseDNS(){
 	}
 }
 
-object test {
+/*object test {
 	def main(args: Array[String]): Unit = {
 		val outPath = "./"
 		Logger.getLogger("spark").setLevel(Level.WARN)
@@ -154,5 +154,5 @@ object test {
 			println(line)
 		})
 	}
-
+*/
 }
