@@ -15,6 +15,12 @@ import java.io.BufferedWriter
 import org.edmond.DLDistance._
 
 class Dictionary(){
+	/* 
+		The Dictionary class can make a list of domain string like a dictionary. The result of the dictionary 
+		is List[List[String]]. The first element of a List[String] is the 'target' domain, and every string 
+		following it is the similar domain which has edit distance less than a given threshold with the 'target'.
+		And the result is sort by the first element of each List[String]
+	*/	
 	def getSimilarString(target: String, strList: List[String], threshold: Int): List[String] = {
 		// Get all similar strings from a string list when a target string is given. 
 		// Compared with target string, the strings in the result list should have edit distance 
@@ -114,9 +120,10 @@ object test {
 	 	val dict = new Dictionary().createDictionary("./weblist/top1000", 2)
 	 	new Dictionary().print(dict)
 	 	new Dictionary().writeToFile("./weblist/top1000.dict", dict)
-	*/
+	
 		val dict = new Dictionary().readFromFile("./weblist/top1000.dict")
 		new Dictionary().print(dict)
 		new Dictionary().writeToFile("./weblist/top1000.dict_2", dict)
+	*/
 	}
 }
