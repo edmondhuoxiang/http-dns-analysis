@@ -7,7 +7,7 @@ import spark.SparkContext
 import spark.SparkContext._
 
 import scala.io.Source
-import sacal.io._
+import scala.io._
 import java.io.File
 import java.io.FileWriter
 import java.io.BufferedWriter
@@ -19,29 +19,104 @@ class Dictionary(){
 		// Get all similar strings from a string list when a target string is given. 
 		// Compared with target string, the strings in the result list should have edit distance 
 		// less than threshold but more than zero
-		val similarSet = new scala.collection.mutable.ArrayBuilder[String]()
+		val similarSet = new scala.collection.mutable.ArrayBuffer[String]()
 
 		for( str <- strList) {
 			val dist = new DLDistance().distance(target, str)
-			if(dist < threshold && dist > 0){
+			if(dist <= threshold && dist > 0){
 				similarSet += str
 			}
 		}
 		return similarSet.toList
 	}
 
-	def createDictionary(path: String) = {
-		// Create the Discrionary structure in memomery when a path is given. 
-		// The input file should store all possible domains. 	
+	def createDictionary(path: String, threshold: Int): List[List[String]] = {
+		// Create the Dictionary structure in memomery when a path is given. 
+		// The input file should store all possible domains. 
+		println("Creating Dictionary...")
+		val dictionary = new scala.collection.mutable.ArrayBuffer[List[String]]()
+		val similarList = new scala.collection.mutable.ArrayBuffer[String]()
+		try { 
+			val strList = scala.io.Source.fromFile(path).mkString.split('\n').toList.sortWith(_ < _)
+			for(target <- strList){
+				val tmpRes = getSimilarString(target, strList, threshold)
+				similarList.clear
+				similarList += target
+				for(similarStr <- tmpRes){
+					similarList += similarStr
+				}
+				dictionary += similarList.toList
+			}
+			println("Finish.")
+			return dictionary.toList
+		} catch {
+		  	case e: Exception => {
+		  		println("Error in createDictionary(): " + e)
+		  		return Nil
+		  	}
+		}	
 	}
-	def writeToFile(path: String) = {
-		// Write to disctionary to file on dist. After this, it is not neccessary to calculate the 
-		// distionary again with function createDictionary() again, just use readFromFile() to read 
+	def writeToFile(path: String, dictionary: List[List[String]]) = {
+		// Write to dictionary to file on dist. After this, it is not neccessary to calculate the 
+		// dictionary again with function createDictionary() again, just use readFromFile() to read 
 		// it from disk.
-		
+		val filewriter = new FileWriter(path, false)
+		val bufferedwriter = new BufferedWriter(filewriter)
+
+		for(i <- 0 until dictionary.size) {
+			for( j <- 0 until dictionary.apply(i).size) {
+				bufferedwriter.write(dictionary.apply(i).apply(j))
+				if(j < dictionary.apply(i).size-1){
+					bufferedwriter.write(" ")
+				}
+			}
+			if(i < dictionary.size){
+				bufferedwriter.write("\n")
+			}
+		}
+		bufferedwriter.close
 	}
-	def readFromFile(path: String) = {
+	def readFromFile(path: String): List[List[String]] = {
 		// Read a complete dictionary from file. Don't need to calculate the edit distance between 
-		// each pair of them. 	
+		// each pair of them. 
+		try { 
+			val lines = scala.io.Source.fromFile(path).mkString.split('\n').toList
+			val dictionary = new scala.collection.mutable.ArrayBuffer[List[String]]()
+			for (line <- lines){
+				val strList = line.split(' ').toList
+				dictionary += strList
+			}
+			return dictionary.toList
+		} catch {
+		  	case e: Exception => {
+		  		println("Error in readFromFile(): "+e)
+		  		return Nil
+		  	}
+		}
+	}
+
+	def print(dictionary: List[List[String]]) = {
+		for( i <- 0 until dictionary.size) {
+			for(j <- 0 until dictionary.apply(i).size){
+				printf(dictionary.apply(i).apply(j))
+				if(j < dictionary.apply(i).size-1)
+					printf(" ")
+			}
+			if(i < dictionary.size-1)
+				println()
+		}
+	}
+}
+
+object test {
+	def main(args: Array[String]): Unit = {
+	 /*	
+	 	val dict = new Dictionary().createDictionary("./weblist/top1000", 2)
+	 	new Dictionary().print(dict)
+	 	new Dictionary().writeToFile("./weblist/top1000.dict", dict)
+	*/
+		val dict = new Dictionary().readFromFile("./weblist/top1000.dict")
+		new Dictionary().print(dict)
+		new Dictionary().writeToFile("./weblist/top1000.dict_2", dict)
 	}
 }
