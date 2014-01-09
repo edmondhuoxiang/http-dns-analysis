@@ -111,19 +111,34 @@ class Dictionary(){
 			if(i < dictionary.size-1)
 				println()
 		}
+		println()
+	}
+
+	def binary_sesearch(target: String, dictionary: List[List[String]], low: Int, high: Int): Int = {
+		val mid = (low + high)/2
+		if(low > high)
+			return -1
+		else{
+			if(dictionary.apply(mid).first == target)
+				return mid
+			else if(dictionary.apply(mid).first > target)
+				return binary_sesearch(target, dictionary, low, mid-1)
+			else
+				return binary_sesearch(target, dictionary, mid+1, high)
+		}
 	}
 }
-
+/*
 object test {
 	def main(args: Array[String]): Unit = {
-	 /*	
+	 
 	 	val dict = new Dictionary().createDictionary("./weblist/top1000", 2)
 	 	new Dictionary().print(dict)
 	 	new Dictionary().writeToFile("./weblist/top1000.dict", dict)
-	
+	/*
 		val dict = new Dictionary().readFromFile("./weblist/top1000.dict")
 		new Dictionary().print(dict)
 		new Dictionary().writeToFile("./weblist/top1000.dict_2", dict)
 	*/
 	}
-}
+}*/

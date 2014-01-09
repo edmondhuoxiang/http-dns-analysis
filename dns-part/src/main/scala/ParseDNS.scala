@@ -69,13 +69,22 @@ class DNSInfo(
 					answers += str
 			}
 			val ip_lst = new scala.collection.mutable.ListBuffer[String]()
-			
-			for(ans <- answers.apply(0).split(',')){
-				ip_lst += ans
+			if(answers.apply(0) != "-")	{
+				for(ans <- answers.apply(0).split(',')){
+					ip_lst += ans
+				}
+			}
+			else{
+				ip_lst += "-"
 			}
 			val ttl_lst = new scala.collection.mutable.ListBuffer[Float]()
-			for(ttl <- answers.apply(1).split(',')){
-				ttl_lst += ttl.toFloat
+			if(answers.apply(1) != "-"){
+				for(ttl <- answers.apply(1).split(',')){
+					ttl_lst += ttl.toFloat
+				}
+			}
+			else{
+				ttl_lst += 0.0.toFloat
 			}
 			return (ip_lst.toList, ttl_lst.toList)
 		} catch {
@@ -119,7 +128,7 @@ class ParseDNS(){
 
 	def antiConvert(record: (Int, Int, String, String, String, Char, List[String], List[Float])) : String = {
 		val line = new scala.collection.mutable.StringBuilder()
-		line ++= record._1.toString+" "+record._2.toString+" "
+		line ++= record._1.toString+"."+"%06d".format(record._2)+" "
 		line ++= record._3+" "+record._4+" "+record._5+" "+record._6.toString+" "
 		for(i <- 0 until record._7.size){
 			line ++= record._7.apply(i)
@@ -127,16 +136,21 @@ class ParseDNS(){
 				line ++= ","
 		}
 		line ++= " "
-		for(i <- 0 until record._8.size){
-			line ++= record._8.apply(i).toString
-			if(i < record._8.size-1)
-				line ++= ","
+		if(record._8.size == 1 && record._8.first == 0.0){
+			line ++= "-"
+		}
+		else{
+			for(i <- 0 until record._8.size){
+				line ++= record._8.apply(i).toString
+				if(i < record._8.size-1)
+					line ++= ","
+			}
 		}
 		return line.toString
 	}
 }
-
-/*object test {
+/*
+object test {
 	def main(args: Array[String]): Unit = {
 		val outPath = "./"
 		Logger.getLogger("spark").setLevel(Level.WARN)
