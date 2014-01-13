@@ -96,8 +96,13 @@ object domainRecords extends Serializable {
 		val dnsRecords = sc.textFile(inFile, 20).map(x => {
 			new ParseDNS().convert(x)
 		}).filter(r => r._1 != 0 && r._2 != 0 && r._5 != "-")
-		val filteredRecords = dnsRecords.filter(r => new ipAdrress().IsInPrefix(r._3, prefixArr)).filter(r => new ipAdrress().IsInPrefix(r._4, prefixArr)==false)
-		val filename = "test_file"
+		val filteredRecords = dnsRecords.filter(r => new ipAdrress().IsInPrefix(r._3, prefixArr)).filter(r => new ipAdrress().IsInPrefix(r._4, prefixArr)==false).map(r => {
+				val ts = r._1+"."+ r._2
+				(ts.toDouble, r)
+			}).sortByKey().map(r => r._2)
+		
+
+		/*val filename = "test_file"
 		val file = new File(outDir + filename)
 		if(!file.exists){
 			file.createNewFile()
@@ -105,7 +110,11 @@ object domainRecords extends Serializable {
 		val fileWriter = new FileWriter(file.getAbsoluteFile(), true)
 		val bufferwriter = new BufferedWriter(fileWriter)
 		filteredRecords.map(record => new ParseDNS().antiConvert(record)).toArray.foreach(r => bufferwriter.write(r + "\n"))
-		bufferwriter.close
+		bufferwriter.close*/
+		val length = inFile.split('/').size
+		val filename = inFile.split('/').apply(length-2)
+		val path = outDir+filename
+		filteredRecords.map(record => new ParseDNS().antiConvert(record)).saveAsTextFile(path)
 	}
 
 	def main(args: Array[String]): Unit = {
