@@ -134,3 +134,39 @@ class ListFiles(){
 		good ++ these.filter(_.isDirectory).flatMap(recursiveListFiles(_,r))
 	}
 }
+
+class ipAdrress(){
+	def asNdigitBinary (source: Int, digits: Int): String = {
+  		val l: java.lang.Long = source.toBinaryString.toLong
+  		String.format ("%0" + digits + "d", l) 
+	}
+
+	def IsBeginWithPrefix(ip: String, prefix: String): Boolean = {
+		val num = prefix.split('/').apply(1).toInt
+		val ipArr = ip.split('.')
+		val prefixArr = prefix.split('/').apply(0).split('.')
+		var i = num
+		var j = 0
+		while(i > 0){
+
+			val num_1 = asNdigitBinary(ipArr.apply(j).toInt, 8)
+			val num_2 = asNdigitBinary(prefixArr.apply(j).toInt, 8)
+			val count = if(i < 8) i else 8
+			for(k <- 0 until count)
+				if(num_1.charAt(k) != num_2.charAt(k))
+					return false
+			j = j + 1
+			i = i - 8
+		}
+		return true
+	}
+
+	def IsInPrefix(ip: String, prefixArr:Array[String]): Boolean ={
+		for(prefix <- prefixArr){
+			val res = IsBeginWithPrefix(ip, prefix)
+			if(res == true)
+				return true
+		}
+		return false
+	}
+}

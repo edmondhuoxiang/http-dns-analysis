@@ -108,7 +108,9 @@ class ParseDNS(){
 	//	println("#####")
 	//	println(line)
 		if(line.first != '#'){
-			val arr = org.apache.commons.lang.StringUtils.split(line," ")
+			val seperate = 9
+			//val arr = org.apache.commons.lang.StringUtils.split(line,seperate.toChar)
+			val arr = org.apache.commons.lang.StringUtils.split(line,' ')
 			val parts = scala.collection.mutable.ListBuffer[String]()
 			for(part <- arr){
 				if(part != "")

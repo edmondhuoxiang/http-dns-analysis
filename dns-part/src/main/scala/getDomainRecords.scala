@@ -88,6 +88,26 @@ object domainRecords extends Serializable {
 		})
 	}
 
+	def filter(sc: SparkContext, inFile: String, outDir: String) = {
+		println("inFile: "+inFile)
+		println("outDir: "+outDir)
+
+		val prefixArr = Array("129.174.0.0/16", "129.174.0.0/17", "129.174.128.0/17", "129.174.130.0/23", "129.174.176.0/20", "192.5.215.0/24", "199.26.254.0/24")
+		val dnsRecords = sc.textFile(inFile, 20).map(x => {
+			new ParseDNS().convert(x)
+		}).filter(r => r._1 != 0 && r._2 != 0 && r._5 != "-")
+		val filteredRecords = dnsRecords.filter(r => new ipAdrress().IsInPrefix(r._3, prefixArr)).filter(r => new ipAdrress().IsInPrefix(r._4, prefixArr)==false)
+		val filename = "test_file"
+		val file = new File(outDir + filename)
+		if(!file.exists){
+			file.createNewFile()
+		}
+		val fileWriter = new FileWriter(file.getAbsoluteFile(), true)
+		val bufferwriter = new BufferedWriter(fileWriter)
+		filteredRecords.map(record => new ParseDNS().antiConvert(record)).toArray.foreach(r => bufferwriter.write(r + "\n"))
+		bufferwriter.close
+	}
+
 	def main(args: Array[String]): Unit = {
 		println("This is a script-started job, getDomainRecords")
 
@@ -109,11 +129,8 @@ object domainRecords extends Serializable {
 
 		val webList = new Dictionary().readFromFile(webListFile)
 
-		//val sortFunc = new OrderedRDDFunctions(webList.map(r => (r,1)))
-		//val sortedList = sortFunc.sortByKey()
-		//val arrWeb = sortedList.map(r => r._1).toArray
-
-		getDomainRecords(sc, args.apply(0), outPath+args.apply(1), webList)
+		filter(sc, args.apply(0), outPath+args.apply(1))
+		//getDomainRecords(sc, args.apply(0), outPath+args.apply(1), webList)
 	}
 	
 }
