@@ -45,7 +45,7 @@ try:
             if arr[6]=="-":
                 ttls = ttls+ "0}"
             else:
-            ttls = ttls + arr[6]+"}"
+                ttls = ttls + arr[6]+"}"
 
             string = "INSERT INTO dns_20130901 VALUES(to_timestamp(%s), '%s', '%s', '%s', '%s', '%s', '%s');" % (ts, orig_h, resp_h, query, recode, answers, ttls)
             cursor.execute(string)
