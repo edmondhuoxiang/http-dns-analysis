@@ -29,7 +29,7 @@ try:
     for file in files:
         lines = open( file, "r" )
         print "adding %s" % file
-        for line in lins:
+        for line in lines:
             arr = line.split(' ')
             ts = int(float(arr[0]))
             orig_h = arr[1]
