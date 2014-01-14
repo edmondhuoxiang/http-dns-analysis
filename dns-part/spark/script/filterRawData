@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cp raw_filelist ../
+cd ..
+while read line
+do
+	name=$line
+	filenames=`ls $name`
+	arr=($filenames)
+	declare  -f arr
+	for file in ${arr[@]}; do
+		echo "Start task of file - $name" >> finish-part.txt
+		echo "Text read from file - $name"
+		./sbt "run $name$file webfiles/"
+		echo "End task of file - $name" >> finish-part.txt
+	done
+done < raw_filelist
