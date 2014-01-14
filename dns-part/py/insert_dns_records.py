@@ -41,10 +41,8 @@ try:
             for answer in answersArr:
                 answers = answers + "\"" + answer + "\","
             answers = answers[:-1] + "}"
-            print "{"+arr[6]+"}"
-            print arr[6]=="-\n"
             ttls = "{"
-            if arr[6]=="-":
+            if arr[6]=="-\n":
                 ttls = ttls+ "0}"
             else:
                 ttls = ttls + arr[6]+"}"
