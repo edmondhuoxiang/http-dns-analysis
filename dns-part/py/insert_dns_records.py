@@ -42,7 +42,7 @@ try:
                 answers = answers + "\"" + answer + "\","
             answers = answers[:-1] + "}"
             print "{"+arr[6]+"}"
-            print arr[6]=="-"
+            print arr[6]=="-\n"
             ttls = "{"
             if arr[6]=="-":
                 ttls = ttls+ "0}"
