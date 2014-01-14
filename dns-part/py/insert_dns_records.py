@@ -31,6 +31,8 @@ try:
         print "adding %s" % file
         for line in lines:
             arr = line.split(' ')
+            if len(arr) != 7:
+                continue
             ts = int(float(arr[0]))
             orig_h = arr[1]
             resp_h = arr[2]
