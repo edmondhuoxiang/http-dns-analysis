@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import psycopg2
+import psycopg2 
 import psycopg2.extras
+import os
 import sys
 
 con = None
