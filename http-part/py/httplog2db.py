@@ -7,7 +7,7 @@ Created on 01/15/2014
 '''
 
 import sys
-import ls
+import os
 import redis
 import imte
 from datetime import datetime, timedelta
