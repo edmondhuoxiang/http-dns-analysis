@@ -125,7 +125,7 @@ def main():
         except pg.DatabaseError, e:
             Log.error('Creating new table %s failed : %s' %(tname, e.pgerror))
             sys.exit(1)
-        logfiles = glob.glob(logdir + 'http-request*.gz')
+        logfiles = glob.glob(logdir + '/http-requests*.gz')
         if logfiles:
             for logfile in logfiles:
                 log2db(logfile, tname)
