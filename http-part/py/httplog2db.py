@@ -115,7 +115,9 @@ def main():
     (
      id serial primary key NOT NULL
     ) INHERITS (gmuhttplog)'''
-    data_to_process = ''
+    test = (datetime.now() + timedelta(days=-1)).strftime('%Y%m%d')
+    print test
+    data_to_process = 'i12'
     logdir = '/raid/brolog/%s' % data_to_process
     if os.path.exists(logdir):
         tname = 'log_' + data_to_process
