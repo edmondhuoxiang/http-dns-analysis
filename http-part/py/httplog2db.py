@@ -95,7 +95,7 @@ def log2db(lfile, tname):
             continue
         keyval = dict(zip(fieldnames,fields))
         try:
-            (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['host'][:256], keyval['url'][:65536], keyval['referrer'][:65536], keyval['method'][:16], keyval['user_agent'][:2048], keyval['status_code'][:16])))
+            (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['host'][:256], keyval['uri'][:65536], keyval['referrer'][:65536], keyval['method'][:16], keyval['user_agent'][:2048], keyval['status_code'][:16])))
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
             pass
@@ -112,9 +112,7 @@ def log2db(lfile, tname):
 
 def main():
     create_new_table = '''CREATE TABLE %s
-    (
-     id serial primary key NOT NULL
-    ) INHERITS (gmuhttplog)'''
+    (id serial primary key NOT NULL, ts charactor varying(20), orig_h inet, resp_h inet, host character varying(256), uri character varying(65536), referrer character varying(65536), method character varying(16), user_agent character varying(2048), status_code character varying(16));'''
     #data_to_process = (datetime.now() + timedelta(days=-1)).strftime('%Y%m%d')
     data_to_process = '20130901'
     logdir = '/raid/brologs/%s' % data_to_process
@@ -129,7 +127,7 @@ def main():
         if logfiles:
             for logfile in logfiles:
                 log2db(logfile, tname)
-            postProcess()
+            #postProcess()
     else:
         Log.info('No log directory was found %s' % data_to_process)
         sys.exit(0)
