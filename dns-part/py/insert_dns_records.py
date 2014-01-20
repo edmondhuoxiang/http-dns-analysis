@@ -23,7 +23,7 @@ try:
     #Drop old table if exists
     cursor.execute("DROP TABLE IF EXISTS dns_20130901;")
     #Then Create a new one
-    cursor.execute("CREATE TABLE dns_20130901(ts DOUBLE PRECISION, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], TTLs float[]);")
+    cursor.execute("CREATE TABLE dns_20130901(ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], TTLs float[]);")
     con.commit
 
     for file in files:
