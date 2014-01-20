@@ -19,11 +19,11 @@ try:
     print "Connected"
     cursor = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
     
-    files = absoluteFilePaths("../spark/res/webfiles/20130902/")
+    files = absoluteFilePaths("../spark/res/webfiles/20130901/")
     #Drop old table if exists
-    cursor.execute("DROP TABLE IF EXISTS dns_20130902;")
+    cursor.execute("DROP TABLE IF EXISTS dns_20130901;")
     #Then Create a new one
-    cursor.execute("CREATE TABLE dns_20130902(ts timestamp without time zone, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], TTLs float[]);")
+    cursor.execute("CREATE TABLE dns_20130901(ts DOUBLE PRECISION, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], TTLs float[]);")
     con.commit
 
     for file in files:
@@ -33,7 +33,8 @@ try:
             arr = line.split(' ')
             if len(arr) != 7:
                 continue
-            ts = int(float(arr[0]))
+            #ts = int(float(arr[0]))
+            ts = arr[0]
             orig_h = arr[1]
             resp_h = arr[2]
             query = arr[3]
@@ -49,7 +50,7 @@ try:
             else:
                 ttls = ttls + arr[6]+"}"
 
-            string = "INSERT INTO dns_20130902 VALUES(to_timestamp(%s), '%s', '%s', '%s', '%s', '%s', '%s');" % (ts, orig_h, resp_h, query, recode, answers, ttls)
+            string = "INSERT INTO dns_20130901 VALUES('%s', '%s', '%s', '%s', '%s', '%s', '%s');" % (ts, orig_h, resp_h, query, recode, answers, ttls)
             cursor.execute(string)
         lines.close()
         con.commit()
