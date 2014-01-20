@@ -93,7 +93,7 @@ def log2db(lfile, tname):
             continue
         if fields[0].find('#') == 0:
             continue
-        keyval = dict(zip)fieldnames,fields))
+        keyval = dict(zip(fieldnames,fields))
         try:
             (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['host'][:256], keyval['url'][:65536], keyval['referrer'][:65536], keyval['method'][:16], keyval['user_agent'][:2048], keyval['status_code'][:16])))
         except Exception, e:
