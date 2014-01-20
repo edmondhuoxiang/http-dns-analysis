@@ -9,7 +9,7 @@ Created on 01/15/2014
 import sys
 import os
 import redis
-import imte
+import time 
 from datetime import datetime, timedelta
 import psycopg2 as pg
 import glob
@@ -115,12 +115,11 @@ def main():
     (
      id serial primary key NOT NULL
     ) INHERITS (gmuhttplog)'''
-    test = (datetime.now() + timedelta(days=-1)).strftime('%Y%m%d')
-    print test
-    data_to_process = 'i12'
+    #data_to_process = (datetime.now() + timedelta(days=-1)).strftime('%Y%m%d')
+    data_to_process = '20140118'
     logdir = '/raid/brolog/%s' % data_to_process
     if os.path.exists(logdir):
-        tname = 'log_' + data_to_process
+        tname = 'log_' + data_to_process + '_rawts'
         try:
             cur.execute(creats_new_table % tname)
         except pg.DatabaseError, e:
