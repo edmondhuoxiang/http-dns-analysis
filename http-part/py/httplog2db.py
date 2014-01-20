@@ -112,7 +112,7 @@ def log2db(lfile, tname):
 
 def main():
     create_new_table = '''CREATE TABLE %s
-    (id serial primary key NOT NULL, ts charactor varying(20), orig_h inet, resp_h inet, host character varying(256), uri character varying(65536), referrer character varying(65536), method character varying(16), user_agent character varying(2048), status_code character varying(16));'''
+    (id serial primary key NOT NULL, ts numeric, orig_h inet, resp_h inet, host character varying(256), uri character varying(65536), referrer character varying(65536), method character varying(16), user_agent character varying(2048), status_code character varying(16));'''
     #data_to_process = (datetime.now() + timedelta(days=-1)).strftime('%Y%m%d')
     data_to_process = '20130901'
     logdir = '/raid/brologs/%s' % data_to_process
