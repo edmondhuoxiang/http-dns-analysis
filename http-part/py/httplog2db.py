@@ -88,7 +88,7 @@ def log2db(lfile, tname):
             logfile.close()
             return
         fields = line.split('\t')
-        if filed[0] == '#fields':
+        if fields[0] == '#fields':
             fieldnames = fields[1:]
             continue
         if fields[0].find('#') == 0:
