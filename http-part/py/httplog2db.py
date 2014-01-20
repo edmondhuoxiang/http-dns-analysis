@@ -95,7 +95,7 @@ def log2db(lfile, tname):
             continue
         keyval = dict(zip(fieldnames,fields))
         try:
-            (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['host'][:256], keyval['uri'][:65536], keyval['referrer'][:65536], keyval['method'][:16], keyval['user_agent'][:2048], keyval['status_code'][:16])))
+            (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['host'][:256].rstrip(), keyval['uri'][:65536].rstrip(), keyval['referrer'][:65536].rstrip(), keyval['method'][:16].rstrip(), keyval['user_agent'][:2048].rstrip(), keyval['status_code'][:16].rstrip())))
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
             pass
