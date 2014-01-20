@@ -116,12 +116,12 @@ def main():
      id serial primary key NOT NULL
     ) INHERITS (gmuhttplog)'''
     #data_to_process = (datetime.now() + timedelta(days=-1)).strftime('%Y%m%d')
-    data_to_process = '20140118'
-    logdir = '/raid/brolog/%s' % data_to_process
+    data_to_process = '20130901'
+    logdir = '/raid/brologs/%s' % data_to_process
     if os.path.exists(logdir):
         tname = 'log_' + data_to_process + '_rawts'
         try:
-            cur.execute(creats_new_table % tname)
+            cur.execute(create_new_table % tname)
         except pg.DatabaseError, e:
             Log.error('Creating new table %s failed : %s' %(tname, e.pgerror))
             sys.exit(1)
