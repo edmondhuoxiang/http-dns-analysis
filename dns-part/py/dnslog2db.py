@@ -130,6 +130,8 @@ def main():
     (ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], ttls double precision[]);'''
     data_to_process = '20130901'
     logdir = '/raid/pdns_bro/%s' % data_to_process
+    log2db('/raid/pdns_bro/20130901/1378008029.pcap0000008.log.gz', 'dns_20130901_2')
+    '''
     if os.path.exists(logdir):
         tname = 'dns_' + data_to_process + '_2'
         try:
@@ -140,9 +142,11 @@ def main():
         logfiles = glob.glob(logdir + '/*.log.gz')
         if logfiles:
             for logfile in logfiles:
+                print 'processing %s' %logfile
                 log2db(logfile, tname)
 
     else:
         Log.info('No log directory was found %s' % data_to_process)
         sys.exit(0)
+        '''
 if __name__ == '__main__':main()
