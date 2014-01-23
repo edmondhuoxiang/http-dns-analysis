@@ -71,10 +71,10 @@ def log2db(lfile, tname):
             answers = answers[:-1] + "}"
             print answers
             ttls = "{"
-            if keyval['ttls'] == "-\n":
+            if keyval['TTLs'] == "-\n":
                 ttls = ttls + "-1}"
             else:
-                ttls = ttls + keyval['ttls'] + "}"
+                ttls = ttls + keyval['TTLs'] + "}"
             print ttls
             (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
         except Exception, e:
