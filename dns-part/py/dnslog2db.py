@@ -39,7 +39,7 @@ def IsBeginWithPrefix(ip, prefix):
     ipStrArr = ip.split('.')
     i = num
     j = 0
-    while(i>0)
+    while(i>0):
         str_1 = asDigitBinary(int(ipStrArr[j]))
         str_2 = asDigitBinary(int(prefixStrArr[j]))
         count=0
