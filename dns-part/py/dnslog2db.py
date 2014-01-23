@@ -80,6 +80,8 @@ def log2db(lfile, tname):
             Log.error('%s : %s' %(lfile,e))
             pass
         if ctr % 10000 == 0:
+            if ctr % 50000 == 0:
+                print '......'
             args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s)",r) for r in records)
             try:
                 cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
