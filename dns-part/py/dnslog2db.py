@@ -23,7 +23,7 @@ tcolumns = '(ts, orig_h, resp_h, query, rcode, answers, ttls)'
 
 try:
     con = pg.connect(database='tds',user='tds',host='localhost',password='9bBJPLr9')
-    con.autocommmit = True
+    con.autocommit = True
     cur = con.cursor()
 
 except pg.DatabaseError, e:
