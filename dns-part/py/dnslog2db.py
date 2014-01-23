@@ -98,7 +98,7 @@ def log2db(lfile, tname):
         prefixArr = ["129.174.0.0/16", "129.174.0.0/17", "129.174.128.0/17", "129.174.130.0/23", "129.174.176.0/20", "192.5.215.0/24", "199.26.254.0/24"]
         if isInPrefix(keyval['id.orig_h'], prefixArr)==False:
             continue
-        if isInprefix(keyval['id.resp_h'], prefixArr)==True:
+        if isInPrefix(keyval['id.resp_h'], prefixArr)==True:
             continue
         try:
             answerArr = keyval['answers'].split(',')
