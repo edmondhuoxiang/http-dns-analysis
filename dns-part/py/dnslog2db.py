@@ -57,7 +57,7 @@ def log2db(lfile, tname):
                 logfile.close()
                 return
         fields = line.split('\t')
-        if fields[0] = '#fields':
+        if fields[0] == '#fields':
             fieldnames = fields[1:]
             continue
         if fields[0].find('#') == 0:
@@ -108,6 +108,6 @@ def main():
                 log2db(logfile, tname)
 
     else:
-        Log.info('No log directory was found %s' %s data_to_process)
+        Log.info('No log directory was found %s' % data_to_process)
         sys.exit(0)
 if __name__ == '__main__':main()
