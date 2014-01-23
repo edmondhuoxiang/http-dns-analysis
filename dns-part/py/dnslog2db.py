@@ -63,7 +63,6 @@ def log2db(lfile, tname):
             continue
         if fields[0].find('#') == 0:
             continue
-        print fieldnames
         keyval = dict(zip(fieldnames, fields))
         try:
             answerArr = keyval['answers'].split(',')
@@ -71,13 +70,11 @@ def log2db(lfile, tname):
             for answer in answerArr:
                 answers = answers + "\"" + answer + "\","
             answers = answers[:-1] + "}"
-            print answers
             ttls = "{"
             if keyval['TTLs'] == "-\n":
                 ttls = ttls + "-1}"
             else:
                 ttls = ttls + keyval['TTLs'][:-1] + "}"
-            print ttls
             (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstrip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
