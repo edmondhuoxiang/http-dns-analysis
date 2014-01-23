@@ -95,7 +95,7 @@ def main():
     (ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], ttls double precision[]);'''
     data_to_process = '20130901'
     logdir = '/raid/pdns_bro/%s' % data_to_process
-    if os.path/exists(logdir):
+    if os.path.exists(logdir):
         tname = 'dns_' + data_to_process + '_rawts_2'
         try:
             cur.execute(create_new_table % tname)
