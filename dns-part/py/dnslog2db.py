@@ -62,6 +62,7 @@ def log2db(lfile, tname):
             continue
         if fields[0].find('#') == 0:
             continue
+        print fieldnames
         keyval = dict(zip(fieldnames, fields))
         try:
             answerArr = keyval['answers'].split(',')
