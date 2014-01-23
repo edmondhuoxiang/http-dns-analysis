@@ -59,6 +59,7 @@ def log2db(lfile, tname):
         fields = line.split('\t')
         if fields[0] == '#fields':
             fieldnames = fields[1:]
+            fieldnames[-1] = fieldnames[-1][:-1]
             continue
         if fields[0].find('#') == 0:
             continue
