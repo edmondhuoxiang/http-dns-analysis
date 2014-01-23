@@ -78,7 +78,7 @@ def log2db(lfile, tname):
             else:
                 ttls = ttls + keyval['TTLs'][:-1] + "}"
             print ttls
-            (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
+            (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstrip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
             pass
