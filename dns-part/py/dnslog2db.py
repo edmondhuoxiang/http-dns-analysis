@@ -69,12 +69,13 @@ def log2db(lfile, tname):
             for answer in answerArr:
                 answers = answers + "\"" + answer + "\","
             answers = answers[:-1] + "}"
+            print answers
             ttls = "{"
             if keyval['ttls'] == "-\n":
                 ttls = ttls + "-1}"
             else:
                 ttls = ttls + keyval['ttls'] + "}"
-
+            print ttls
             (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
