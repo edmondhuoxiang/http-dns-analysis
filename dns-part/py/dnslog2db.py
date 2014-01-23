@@ -33,7 +33,7 @@ except pg.DatabaseError, e:
 def asDigitBinary(source):
     return '{0:08b}'.format(source)
 
-def IsBeginWithPrefix(ip, prefix):
+def isBeginWithPrefix(ip, prefix):
     num = int(prefix.split('/')[1])
     prefixStrArr = prefix.split('/')[0].split('.')
     ipStrArr = ip.split('.')
