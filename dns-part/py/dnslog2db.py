@@ -109,7 +109,9 @@ def log2db(lfile, tname):
             (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstrip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
+            print fieldnames
             pass
+        ctr = ctr + 1
         if ctr % 10000 == 0:
             if ctr % 50000 == 0:
                 print '%d......' % ctr
