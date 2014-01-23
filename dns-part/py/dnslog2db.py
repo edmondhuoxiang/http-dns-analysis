@@ -98,7 +98,7 @@ def main():
     data_to_process = '20130901'
     logdir = '/raid/pdns_bro/%s' % data_to_process
     if os.path.exists(logdir):
-        tname = 'dns_' + data_to_process + '_rawts_2'
+        tname = 'dns_' + data_to_process + '_2'
         try:
             cur.execute(create_new_table % tname)
         except pg.DatabaseError, e:
