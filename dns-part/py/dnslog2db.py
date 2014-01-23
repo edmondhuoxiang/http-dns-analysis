@@ -64,7 +64,7 @@ def log2db(lfile, tname):
             continue
         keyval = dict(zip(fieldnames, fields))
         try:
-            answersArr = keyval['answers'].split(',')
+            answerArr = keyval['answers'].split(',')
             answers = "{"
             for answer in answerArr:
                 answers = answers + "\"" + answer + "\","
