@@ -95,6 +95,11 @@ def log2db(lfile, tname):
         if fields[0].find('#') == 0:
             continue
         keyval = dict(zip(fieldnames, fields))
+        prefixArr = ["129.174.0.0/16", "129.174.0.0/17", "129.174.128.0/17", "129.174.130.0/23", "129.174.176.0/20", "192.5.215.0/24", "199.26.254.0/24"]
+        if isInPrefix(keyval['id.orig_h'], prefixArr)==False:
+            continue
+        if isInprefix(keyval['id.resp_h'], prefixArr)==True:
+            continue
         try:
             answerArr = keyval['answers'].split(',')
             answers = "{"
@@ -137,14 +142,13 @@ def main():
         except pg.DatabaseError, e:
             Log.error('Creating new table %s failed : %s' % (tname, e.pgerror))
             sys.exit(1)
-        log2db('/raid/pdns_bro/20130901/1378008029.pcap0000008.log.gz', 'dns_20130901_2')
         logfiles = glob.glob(logdir + '/*.log.gz')
-        '''
+        
         if logfiles:
             for logfile in logfiles:
                 print 'processing %s' %logfile
                 log2db(logfile, tname)
-'''
+
     else:
         Log.info('No log directory was found %s' % data_to_process)
         sys.exit(0)
