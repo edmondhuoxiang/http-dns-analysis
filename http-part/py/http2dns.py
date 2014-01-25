@@ -52,7 +52,7 @@ def main():
     httpTable = 'log_' + data_to_process + '_rawts'
     dnsTable = 'dns_' + data_to_process
     tname = ''
-    http2dns(httpTable, dnsTbale, tname)
+    http2dns(httpTable, dnsTable, tname)
 
 
 if __name__ == '__main__':main()
