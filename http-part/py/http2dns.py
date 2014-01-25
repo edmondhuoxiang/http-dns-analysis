@@ -49,7 +49,7 @@ def http2dns(httpTable, dnsTable, tname):
 
 def main():
     data_to_process = '20130901'
-    httpTabe = 'log_' + data_to_process + '_rawts'
+    httpTable = 'log_' + data_to_process + '_rawts'
     dnsTable = 'dns_' + data_to_process
     tname = ''
     http2dns(httpTable, dnsTbale, tname)
