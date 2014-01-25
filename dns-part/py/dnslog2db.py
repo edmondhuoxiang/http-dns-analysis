@@ -132,7 +132,7 @@ def log2db(lfile, tname):
 
 def main():
     create_new_table = '''CREATE TABLE %s
-    (ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], ttls double precision[]);'''
+    (id serial primary key NOT NULL, ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], ttls double precision[]);'''
     data_to_process = '20130901'
     logdir = '/raid/pdns_bro/%s' % data_to_process
     if os.path.exists(logdir):
