@@ -37,6 +37,9 @@ def http2dns(httpTable, dnsTable, tname):
     
     try:
         cur.execute('SELECT * FROM %s LIMIT 10;' %(httpTable))
+    except pg.DatabaseError, r:
+        Log.error('%s : %s' %(httpTable, e.pgerror))
+        exit(1)
     while True:
         rows = cur.fetchone()
         if rows == None:
