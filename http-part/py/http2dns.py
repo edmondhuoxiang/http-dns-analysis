@@ -37,7 +37,7 @@ def http2dns(httpTable, dnsTable, tname):
     global cur
     
     try:
-        cur.execute('SELECT * FROM %s LIMIT 10;' %(httpTable))
+        cur.execute('SELECT * FROM %s LIMIT 10 where host=\'google.com\';' %(httpTable))
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
