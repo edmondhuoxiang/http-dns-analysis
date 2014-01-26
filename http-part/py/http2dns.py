@@ -103,7 +103,7 @@ def http2dns(httpTable, dnsTable, tname):
                 Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
                 pass
             if ctr % 10000 == 0:
-                args = ','join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
+                args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
                 try:
                     cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
                     del records[:]
