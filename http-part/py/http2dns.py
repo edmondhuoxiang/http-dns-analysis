@@ -37,7 +37,16 @@ def http2dns(httpTable, dnsTable, tname):
     global cur
     
     try:
-        cur.execute('SELECT * FROM %s LIMIT 5000;' %(httpTable))
+        cur.execute('SELECT MIN(ts) from %s;' %(dnsTable))
+        min1 = cur.fetchone()
+        cur.execute('SELECT MIN(ts) from %s;' %(httpTable))
+        min2 = cur.fetchone()
+        mints = 0.0
+        if min1 <  min2:
+            mints = min2
+        else:
+            mints = min1
+        cur.execute('SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, mints))
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
@@ -78,9 +87,10 @@ def http2dns(httpTable, dnsTable, tname):
             dns_orig = dns_row["orig_h"]
             dns_resp = dns_row["resp_h"]
             try:
-                print 'Get One!'
+                print 'Get One! %d' % ctr
                 (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
                 ctr = ctr + 1
+
             except Exception, e:
                 Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
                 pass
@@ -102,7 +112,7 @@ def http2dns(httpTable, dnsTable, tname):
             dns_orig = '0.0.0.0'
             dns_resp = '0.0.0.0'
             try:
-                print 'Found none for this http record'
+                print 'Found none for this http record %d' %ctr
                 (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
                 ctr = ctr + 1
             except Exception, e:
