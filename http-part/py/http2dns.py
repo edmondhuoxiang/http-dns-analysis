@@ -46,7 +46,9 @@ def http2dns(httpTable, dnsTable, tname):
             mints = min2
         else:
             mints = min1
+        print 'SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, mints)
         cur.execute('SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, mints))
+        print 'End'
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
