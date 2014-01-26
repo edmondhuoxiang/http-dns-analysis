@@ -35,6 +35,7 @@ except pg.DatabaseError, e:
 def http2dns(httpTable, dnsTable, tname):
     records = []
     ctr = 0
+    multi = 0
     global cur
     
     try:
@@ -98,6 +99,7 @@ def http2dns(httpTable, dnsTable, tname):
             except Exception, e:
                 Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
                 pass
+            '''
             if ctr % 100 == 0:
                 args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
                 try:
@@ -108,7 +110,7 @@ def http2dns(httpTable, dnsTable, tname):
                     Log.error('%s : %s' %(tname, e.pgerror))
                     continue
                 if ctr % 50000 == 0:
-                    print '%d...' % ctr
+                    print '%d...' % ctr'''
         if flag == False:
             dns_id = -1
             dns_ts = -1
@@ -122,18 +124,20 @@ def http2dns(httpTable, dnsTable, tname):
             except Exception, e:
                 Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
                 pass
-            if ctr % 100 == 0:
-                args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
-                try:
-                    cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
-                    del records[:]
-                    args = ''
-                except pg.DatabaseError, e:
-                    Log.error('%s : %s' %(tname, e.pgerror))
-                    continue
-                if ctr % 50000 == 0:
-                    print '%d...' % ctr
+        
+        if ((ctr + 1)/100) > multi:
+            args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
+            try:
+                cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
+                del records[:]
+                args = ''
+            except pg.DatabaseError, e:
+                Log.error('%s : %s' %(tname, e.pgerror))
+                continue
+            if ctr % 50000 == 0:
+                print '%d...' % ctr
         flag = False
+        multi = (ctr + 1)/100
     if records:
         args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
         try:
