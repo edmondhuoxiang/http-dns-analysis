@@ -41,30 +41,27 @@ def http2dns(httpTable, dnsTable, tname):
     except pg.DatabaseError, r:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
-    while True:
-        http_rows = cur.fetchall()
-        #if http_row == None:
-        #   break
-        for http_row in http_rows:
-            http_ts = http_row["ts"]
-            domain = http_row["host"]
-            http_resp = http_row["resp_h"]
-            http_orig = http_row9"orig_h"]
-            http_id = http_row["id"]
-            try:
-                cur.execute('SELECT * FROM %s WHERE ts < %s and query = %s desc ts limit 2;', dnsTable, http_ts, domain)
-            except pg.DatabaseError, r:
-                Log.error('%s : %s' %(dnsTable, e.pgerror))
-                exit(1)
-            while True:
-                dns_row = cur.fetchone() 
-                if dns_row == None:
-                    break
-                answers = dns_row["answers"]
-                ttls = dns_row9["ttls"]
-                print domain
-                print answers
-                print ttls
+    http_rows = cur.fetchall()
+    for http_row in http_rows:
+        http_ts = http_row["ts"]
+        domain = http_row["host"]
+        http_resp = http_row["resp_h"]
+        http_orig = http_row["orig_h"]
+        http_id = http_row["id"]
+        try:
+            cur.execute('SELECT * FROM %s WHERE ts < %s desc ts limit 2;'% (dnsTable, http_ts))
+        except pg.DatabaseError, r:
+            Log.error('%s : %s' %(dnsTable, e.pgerror))
+            exit(1)
+        while True:
+            dns_row = cur.fetchone() 
+            if dns_row == None:
+                break
+            answers = dns_row["answers"]
+            ttls = dns_row9["ttls"]
+            print domain
+            print answers
+            print ttls
 
         
        
