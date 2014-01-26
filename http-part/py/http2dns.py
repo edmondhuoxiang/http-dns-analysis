@@ -78,7 +78,7 @@ def http2dns(httpTable, dnsTable, tname):
                     ttl = ttls[i]
                     break
             dns_ts = dns_row["ts"]
-            if decimal.Decimal(dns_ts) < (decimal.Decimal(http_ts) - decimal.Decimal(ttl)):
+            if decimal.Decimal(dns_ts) > (decimal.Decimal(http_ts) - decimal.Decimal(ttl)):
                 continue
             flag = True
             dns_id = dns_row["id"]
