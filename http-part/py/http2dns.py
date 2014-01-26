@@ -24,7 +24,7 @@ tcolumns = '(dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig_h, dns_resp
 try:
     con = pg.connect(database='tds',user='tds',host='localhost',password='9bBJPLr9')
     con.autocommit = True
-    cur = con.cursor()
+    cur = con.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 except pg.DatabaseError, e:
     Log.error(e.pgerror)
@@ -45,8 +45,7 @@ def http2dns(httpTable, dnsTable, tname):
         if rows == None:
             break
         for row in rows:
-            print row
-
+            print row["ts"]
 def main():
     data_to_process = '20130901'
     httpTable = 'log_' + data_to_process + '_rawts'
