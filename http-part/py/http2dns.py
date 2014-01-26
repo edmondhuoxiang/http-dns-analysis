@@ -38,7 +38,7 @@ def http2dns(httpTable, dnsTable, tname):
     
     try:
         cur.execute('SELECT * FROM %s LIMIT 10;' %(httpTable))
-    except pg.DatabaseError, r:
+    except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
     http_rows = cur.fetchall()
@@ -50,7 +50,7 @@ def http2dns(httpTable, dnsTable, tname):
         http_id = http_row["id"]
         try:
             cur.execute('SELECT * FROM %s WHERE ts < %s desc ts limit 2;'% (dnsTable, http_ts))
-        except pg.DatabaseError, r:
+        except pg.DatabaseError, e:
             Log.error('%s : %s' %(dnsTable, e.pgerror))
             exit(1)
         while True:
