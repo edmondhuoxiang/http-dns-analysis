@@ -58,9 +58,15 @@ def http2dns(httpTable, dnsTable, tname):
         http_resp = http_row["resp_h"]
         http_orig = http_row["orig_h"]
         http_id = http_row["id"]
+        domain_brief = ''
+        if domain.split('.') == 'www':
+            domain_brief = '.'.join(domain.split('.')[1:])
+        else:
+            domain_brief = domain
+        
         try:
             print 'Finding #%s, domain : %s' %(http_id, domain)
-            cur.execute('SELECT * FROM %s WHERE ts < %s and ts > 0 and ts > %s - 3600 and query = \'%s\' order by ts desc;'% (dnsTable, http_ts, http_ts, domain))
+            cur.execute('SELECT * FROM %s WHERE ts < %s and ts > 0 and ts > (%s - 3600) and (query = \'%s\' or query = \'%s\') order by ts desc;'% (dnsTable, http_ts, http_ts, domain, domain_brief))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(dnsTable, e.pgerror))
             exit(1)
@@ -92,7 +98,7 @@ def http2dns(httpTable, dnsTable, tname):
             except Exception, e:
                 Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
                 pass
-            if ctr % 10000 == 0:
+            if ctr % 100 == 0:
                 args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
                 try:
                     cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
@@ -116,7 +122,7 @@ def http2dns(httpTable, dnsTable, tname):
             except Exception, e:
                 Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
                 pass
-            if ctr % 10000 == 0:
+            if ctr % 100 == 0:
                 args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
                 try:
                     cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
