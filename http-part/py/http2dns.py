@@ -137,6 +137,7 @@ def main():
     dnsTable = 'dns_' + data_to_process
     tname = 'dns_and_http_' + data_to_process
     try:
+        cur.execute('DROP TABLE IF EXISTS %s' % tname)
         cur.execute(create_new_table % tname)
     except pg.DatabaseError, e:
         Log.error('Creating new table %s failed : %s' %(tname, e.pgerror))
