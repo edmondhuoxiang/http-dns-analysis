@@ -67,6 +67,9 @@ def http2dns(httpTable, dnsTable, tname):
                     ttl = ttls[i]
                     break
             dns_ts = dns_row["ts"]
+            print dns_ts
+            print http_ts
+            print ttl
             if dns_ts < (http_ts - ttl):
                 continue
             flag = False
