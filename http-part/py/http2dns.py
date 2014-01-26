@@ -39,19 +39,14 @@ def http2dns(httpTable, dnsTable, tname):
     try:
         cur.execute('SELECT MIN(ts) from %s;' %(dnsTable))
         min1 = cur.fetchone()
-        print min1
         cur.execute('SELECT MIN(ts) from %s;' %(httpTable))
         min2 = cur.fetchone()
-        print min2
         mints = 0.0
         if min1 <  min2:
             mints = min2
         else:
             mints = min1
-        print mints
-        print 'SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, mints)
         cur.execute('SELECT * FROM %s where ts > %s LIMIT 5000;' %(httpTable, str(mints)[10:-3]))
-        print 'End'
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
@@ -82,10 +77,7 @@ def http2dns(httpTable, dnsTable, tname):
                     ttl = ttls[i]
                     break
             dns_ts = dns_row["ts"]
-            print dns_ts
-            print http_ts
-            print ttl
-            if dns_ts < (http_ts - ttl):
+            if decimal.Decimal(dns_ts) < (decimal.Decimal(http_ts) - decimal.Decimal(ttl)):
                 continue
             flag = True
             dns_id = dns_row["id"]
