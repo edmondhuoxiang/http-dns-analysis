@@ -49,7 +49,7 @@ def http2dns(httpTable, dnsTable, tname):
         http_orig = http_row["orig_h"]
         http_id = http_row["id"]
         try:
-            cur.execute('SELECT * FROM %s WHERE ts < %s desc ts limit 2;'% (dnsTable, http_ts))
+            cur.execute('SELECT * FROM %s WHERE ts < %s order by ts desc limit 2;'% (dnsTable, http_ts))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(dnsTable, e.pgerror))
             exit(1)
