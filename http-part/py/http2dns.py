@@ -12,6 +12,7 @@ import redis
 import time
 from datetime import datetime, timedelta
 import psycopg2 as pg
+import psycopg2.extras
 import glob
 import gzip
 import logging as Log
