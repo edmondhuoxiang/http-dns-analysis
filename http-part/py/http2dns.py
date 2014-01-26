@@ -37,7 +37,7 @@ def http2dns(httpTable, dnsTable, tname):
     global cur
     
     try:
-        cur.execute('SELECT * FROM %s LIMIT 10 where host=\'google.com\';' %(httpTable))
+        cur.execute('SELECT * FROM %s LIMIT 5000;' %(httpTable))
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
@@ -49,28 +49,95 @@ def http2dns(httpTable, dnsTable, tname):
         http_orig = http_row["orig_h"]
         http_id = http_row["id"]
         try:
-            cur.execute('SELECT * FROM %s WHERE ts < %s order by ts desc limit 2;'% (dnsTable, http_ts))
+            cur.execute('SELECT * FROM %s WHERE ts < %s and ts > 0 and ts > %s - 3600 and query = \'%s\' order by ts desc;'% (dnsTable, http_ts, http_ts, domain))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(dnsTable, e.pgerror))
             exit(1)
+        dns_id = -1
+        flag = False # Mark the current http record has been correlate with at least one dns record
         while True:
             dns_row = cur.fetchone() 
             if dns_row == None:
                 break
             answers = dns_row["answers"]
-            ttls = dns_row9["ttls"]
-            print domain
-            print answers
-            print ttls
+            ttls = dns_row["ttls"]
+            ttl = 0.0
+            for i in range(0, len(answers)):
+                if answers[i] == http_resp:
+                    ttl = ttls[i]
+                    break
+            dns_ts = dns_row["ts"]
+            if dns_ts < http_ts - ttl
+                continue
+            flag = False
+            dns_id = dns_row["id"]
+            dns_orig = dns_row["orig_h"]
+            dns_resp = dns_row["resp_h"]
+            try:
+                (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
+                ctr = ctr + 1
+            except Exception, e:
+                Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
+                pass
+            if ctr % 10000 == 0:
+                args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
+                try:
+                    cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
+                    del records[:]
+                    args = ''
+                except pg.DatabaseError, e:
+                    Log.error('%s : %s' %(tname, e.pgerror))
+                    continue
+                if ctr % 50000 == 0:
+                    print '%d...' % ctr
+        if flag:
+            dns_id = -1
+            dns_ts = -1
+            ttl = 0.0
+            dns_orig = '0.0.0.0'
+            dns_resp = '0.0.0.0'
+            try:
+                (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
+                ctr = ctr + 1
+            except Exception, e:
+                Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
+                pass
+            if ctr % 10000 == 0:
+                args = ','join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
+                try:
+                    cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
+                    del records[:]
+                    args = ''
+                except pg.DatabaseError, e:
+                    Log.error('%s : %s' %(tname, e.pgerror))
+                    continue
+                if ctr % 50000 == 0:
+                    print '%d...' % ctr
+        flag = False
+    if records:
+        args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
+        try:
+            cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
+        except pg.DatabaseError, e:
+            Log.error('%s : %s' %(tname, e.pgerror))
+    Log.info('%d records were logged table %s from %s and %s' %(ctr, tname, dnsTable, httpTable))
+    logfile.close()
+    return
 
         
        
 def main():
+    create_new_table = '''CREATE TABLE %s
+    (dns_id integer, http_id integer, dns_ts numeric, http_ts numeric, domain character varying(256), ttl double precision, dns_orig_h inet, dns_resp_h inet, http_orig_h inet, http_resp_h inet);'''
     data_to_process = '20130901'
     httpTable = 'log_' + data_to_process + '_rawts'
     dnsTable = 'dns_' + data_to_process
-    tname = ''
+    tname = 'dns_and_http_' + data_to_process
+    try:
+        cur.execute(create_new_table % tname)
+    except pg.DatabaseError, e:
+        Log.error('Creating new table %s failed : %s' %(tname, e.pgerror))
+        sys.exit(1)
     http2dns(httpTable, dnsTable, tname)
-
 
 if __name__ == '__main__':main()
