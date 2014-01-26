@@ -38,10 +38,10 @@ def http2dns(httpTable, dnsTable, tname):
     
     try:
         cur.execute('SELECT MIN(ts) from %s;' %(dnsTable))
-        min1 = cur.fetchone()
+        min1 = cur.fetchone()(0)
         print min1
         cur.execute('SELECT MIN(ts) from %s;' %(httpTable))
-        min2 = cur.fetchone()
+        min2 = cur.fetchone()(0)
         print min2
         mints = 0.0
         if min1 <  min2:
