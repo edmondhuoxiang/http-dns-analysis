@@ -49,6 +49,7 @@ def http2dns(httpTable, dnsTable, tname):
         http_orig = http_row["orig_h"]
         http_id = http_row["id"]
         try:
+            print 'Finding #%s, domain : %s' %(http_id, domain)
             cur.execute('SELECT * FROM %s WHERE ts < %s and ts > 0 and ts > %s - 3600 and query = \'%s\' order by ts desc;'% (dnsTable, http_ts, http_ts, domain))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(dnsTable, e.pgerror))
@@ -72,11 +73,12 @@ def http2dns(httpTable, dnsTable, tname):
             print ttl
             if dns_ts < (http_ts - ttl):
                 continue
-            flag = False
+            flag = True
             dns_id = dns_row["id"]
             dns_orig = dns_row["orig_h"]
             dns_resp = dns_row["resp_h"]
             try:
+                print 'Get One!'
                 (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
                 ctr = ctr + 1
             except Exception, e:
@@ -93,13 +95,14 @@ def http2dns(httpTable, dnsTable, tname):
                     continue
                 if ctr % 50000 == 0:
                     print '%d...' % ctr
-        if flag:
+        if flag == False:
             dns_id = -1
             dns_ts = -1
             ttl = 0.0
             dns_orig = '0.0.0.0'
             dns_resp = '0.0.0.0'
             try:
+                print 'Found none for this http record'
                 (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
                 ctr = ctr + 1
             except Exception, e:
