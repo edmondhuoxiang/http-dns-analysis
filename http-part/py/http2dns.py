@@ -38,7 +38,7 @@ def http2dns(httpTable, dnsTable, tname):
     
     try:
         cur.execute('SELECT MIN(ts) from %s;' %(dnsTable))
-        min1 = cur.fetchall()
+        min1 = cur.fetchone()
         print min1
         cur.execute('SELECT MIN(ts) from %s;' %(httpTable))
         min2 = cur.fetchone()
@@ -50,7 +50,7 @@ def http2dns(httpTable, dnsTable, tname):
             mints = min1
         print mints
         print 'SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, mints)
-        cur.execute('SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, mints))
+        cur.execute('SELECT * FROM %s ts > %s LIMIT 5000;' %(httpTable, str(mints)[10:-3]))
         print 'End'
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
