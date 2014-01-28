@@ -88,7 +88,7 @@ class Record:
             for i in range(0, len(self.resolvers)):
                 if orig == self.resolvers[i]:
                     ttl = 0.0
-                    for j in range(0, len(ttls))
+                    for j in range(0, len(ttls)):
                         ttl = ttl + ttls[j]
                     ttl = float(ttl)/len(ttls)
                     if ttl > 0:
