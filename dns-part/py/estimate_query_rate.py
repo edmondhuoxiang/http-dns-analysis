@@ -61,7 +61,7 @@ class Record:
             resolver = cur.fetchone()
             if resolver == None:
                 break
-            print 'Resolver: %s' %(str(resolver))
+            print 'Resolver: %s' %(str(resolver)[2:-2])
             self.resolvers.append(str(resolver)[2:-2])
         self.series = []
         for i in range(0, len(self.resolvers)):
@@ -142,7 +142,7 @@ def estimate_day(tname):
         if domain not in domain_rates:
             domain_rates[domain] = []
         for i in range(0, len(query_rate)):
-            print 'Roselver : %s\t Rate : %f\n' %(resovlers[i], query_rate[i])
+            print 'Roselver : %s\t Rate : %f\n' %(resolvers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
 
 
