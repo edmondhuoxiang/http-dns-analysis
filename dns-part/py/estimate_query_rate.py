@@ -94,7 +94,7 @@ class Record:
                     if ttl > self.max_ttl:
                         self.max_ttl = ttl
         
-        for i in range(0, len(self.series):
+        for i in range(0, len(self.series)):
             self.series[i].sort(key=itemgetter(0))
 
     def estimate_rate(self):
