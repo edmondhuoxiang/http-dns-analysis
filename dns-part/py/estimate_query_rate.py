@@ -87,7 +87,8 @@ class Record:
 
             for i in range(0, len(self.resolvers)):
                 if orig == self.resolvers[i]:
-                    for ttl in ttls:
+                    ttl = ttls[i]
+                    if ttl > 0:
                         self.series[i].append([ts, ttl])
                         if ttl > self.max_ttl:
                             self.max_ttl = ttl
