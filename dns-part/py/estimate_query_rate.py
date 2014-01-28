@@ -146,7 +146,7 @@ class Record:
                 continue
             else:
                 if estimate == 0:
-                    print 'estimate == 0':
+                    print 'estimate == 0'
                     result.append(-2)
                 else:
                     result.append(count/float(estimate))
