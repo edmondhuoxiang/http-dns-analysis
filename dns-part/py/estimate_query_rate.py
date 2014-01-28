@@ -38,7 +38,6 @@ def getDomains(tname):
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
-        logfile.close()
         exit(1)
     return domain
 
