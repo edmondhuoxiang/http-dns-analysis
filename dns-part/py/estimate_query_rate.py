@@ -39,7 +39,7 @@ def getDomains(tname):
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
         exit(1)
-    return domain
+    return domains
 
 def main():
     data_to_process = '20130901'
