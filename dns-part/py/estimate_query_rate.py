@@ -115,6 +115,16 @@ class Record:
 
             estimate = 0
             count = 0
+            del_num = 0
+            index = 0
+            while index < (len(self.series[j])-1-del_num):
+                num1 = int(self.series[j][index][0])
+                num2 = int(self.series[j][index+1][0])
+                if num1 == num2:
+                    del self.series[j][index+1]
+                    del_num = del_num + 1
+                else:
+                    index = index +1
             flag = False
             for i in range(0, len(self.series[j])-1):
                 ts_1 = int(self.series[j][i+1][0])
