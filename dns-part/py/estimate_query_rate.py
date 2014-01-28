@@ -84,10 +84,10 @@ class Record:
             ts = str(record["ts"])[10:-3]
             ttls = record["ttls"]
             orig = record["orig_h"]
-            print 'orig_h : %s' % orig
+           ''' print 'orig_h : %s' % orig
             print 'ttls :'
             print ttls
-
+'''
             for i in range(0, len(self.resolvers)):
                 if orig == self.resolvers[i]:
                     ttl = 0.0
@@ -118,7 +118,9 @@ class Record:
             del_num = 0
             index = 0
             while index < (len(self.series[j])-1-del_num):
+                print self.series[j][index][0]
                 num1 = int(self.series[j][index][0])
+                print self.series[j][index+1][0]
                 num2 = int(self.series[j][index+1][0])
                 ttl = self.series[j][index][1]
                 if ttl < 0:
