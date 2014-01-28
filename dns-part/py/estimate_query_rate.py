@@ -94,10 +94,10 @@ class Record:
                     for j in range(0, len(ttls)):
                         ttl = ttl + ttls[j]
                     ttl = float(ttl)/len(ttls)
-                    if ttl > 0:
-                        self.series[i].append([ts, ttl])
-                        if ttl > self.max_ttl:
-                            self.max_ttl = ttl
+                    #if ttl > 0:
+                    self.series[i].append([ts, ttl])
+                    if ttl > self.max_ttl:
+                        self.max_ttl = ttl
         print 'SERIES'
         print self.series
         self.series.sort(key=itemgetter(0))
