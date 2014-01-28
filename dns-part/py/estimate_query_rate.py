@@ -98,13 +98,13 @@ class Record:
                     self.series[i].append([ts, ttl])
                     if ttl > self.max_ttl:
                         self.max_ttl = ttl
-        print 'SERIES'
+    '''    print 'SERIES'
         print self.series
         self.series.sort(key=itemgetter(0))
         print 'max_ttl: %d' % self.max_ttl
         for item in self.series:
             print item
-
+'''
     def estimate_rate(self):
         result = []
         for j in range(0, len(self.resolvers)):
@@ -126,6 +126,9 @@ class Record:
                 else:
                     index = index +1
             flag = False
+            print '***'
+            for i in range(0, len(self.series[j])-1):
+                print self.series[j][i]
             for i in range(0, len(self.series[j])-1):
                 ts_1 = int(self.series[j][i+1][0])
                 ts_0 = int(self.series[j][i][0])
