@@ -36,7 +36,7 @@ def getDomains(tname):
     global cur
     try:
         #cur.execute('select distinct(query) from %s limit 10;' % tname)
-        cur.execute('select distinct query from %s group by query having count(*) > 30 order by query desc limit 10;' % tname)
+        cur.execute('select distinct query from %s group by query having count(*) > 10;' % tname)
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
