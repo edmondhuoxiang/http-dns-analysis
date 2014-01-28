@@ -92,6 +92,9 @@ class Record:
                         if ttl > self.max_ttl:
                             self.max_ttl = ttl
         self.series.sort(key=itemgetter(0))
+        print 'max_ttl: %d' % self.max_ttl
+        for item in self.series:
+            print item
 
     def estimate_rate(self):
         result = []
