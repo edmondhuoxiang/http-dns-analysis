@@ -84,8 +84,8 @@ class Record:
             ttls = record["ttls"]
             orig = record["orig_h"]
 
-            for i in range(0, len(self.resolver)):
-                if orig == self.resolver[i]:
+            for i in range(0, len(self.resolvers)):
+                if orig == self.resolvers[i]:
                     for ttl in ttls:
                         self.series[i].append([ts, ttl])
                         if ttl > self.max_ttl:
