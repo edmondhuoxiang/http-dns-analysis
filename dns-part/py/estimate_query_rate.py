@@ -145,7 +145,11 @@ class Record:
             if flag:
                 continue
             else:
-                result.append(count/float(estimate))
+                if estimate == 0:
+                    print 'estimate == 0':
+                    result.append(-2)
+                else:
+                    result.append(count/float(estimate))
         return result
 
 def estimate_day(tname):
