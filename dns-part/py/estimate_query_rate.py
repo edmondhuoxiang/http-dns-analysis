@@ -43,7 +43,7 @@ def getDomains(tname):
     results = []
     for domain in domains:
         print str(domain)
-        results.append(str(domain)[2:-3])
+        results.append(str(domain)[2:-2])
     return results 
 
 MIN_SERIES_SIZE = 10
@@ -61,8 +61,8 @@ class Record:
             resolver = cur.fetchone()
             if resolver == None:
                 break
-            print 'Resolver: %s' %(str(resovler)[2:-3])
-            self.resolvers.append(str(resolver)[2:-3])
+            print 'Resolver: %s' %(str(resovler))
+            self.resolvers.append(str(resolver)[2:-2])
         self.series = []
         for i in range(0, len(self.resolvers)):
             self.series.append([])
