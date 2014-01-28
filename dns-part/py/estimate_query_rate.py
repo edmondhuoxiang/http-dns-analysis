@@ -68,7 +68,7 @@ class Record:
 
 
         try:
-            cur.execute('SELECT * FROM %s where query = %s;' %(tname, query))
+            cur.execute('SELECT * FROM %s where query = \'%s\';' %(tname, query))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(tname, e))
             exit(1)
