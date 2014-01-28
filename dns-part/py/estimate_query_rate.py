@@ -25,6 +25,9 @@ try:
     con = pg.connect(database='tds', user='tds', host='localhost', password='9bBJPLr9')
     con.automatic = True
     cur = con.cursor()
+except pg.DatabaseError, e:
+    Log.error(e.pgerror)
+    exit(1)
 
 
 def getDomains(tname):
