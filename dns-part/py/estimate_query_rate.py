@@ -96,6 +96,7 @@ class Record:
         result = []
         for j in range(0, len(self.resolvers)):
             if len(self.series[j]) < MIN_SERIES_SIZE:
+                print 'Length of series is %d less than MIN_SERIES_SIZE' % len(self.series[j])
                 result.append(-1)
                 continue
 
