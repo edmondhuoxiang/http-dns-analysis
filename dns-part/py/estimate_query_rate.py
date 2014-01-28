@@ -42,7 +42,7 @@ def getDomains(tname):
     results = []
     for domain in domains:
         results.append(str(domain)[2:-3])
-    return domains
+    return results 
 
 def main():
     data_to_process = '20130901'
