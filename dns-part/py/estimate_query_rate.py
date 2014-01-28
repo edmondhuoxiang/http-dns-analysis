@@ -52,7 +52,7 @@ class Record:
         global cur
         self.resolvers = []
         try:
-            cur.execute('SELECT DISTINCT orig_h FROM %s WHERE query = %s;' %(tname, query));
+            cur.execute('SELECT DISTINCT orig_h FROM %s WHERE query = \'%s\';' %(tname, query));
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(tname, e))
             exit(1)
@@ -60,6 +60,7 @@ class Record:
             resolver = cur.fetchone()
             if resolver == None:
                 break
+            print 'Resolver: %s' %(str(resovler)[2:-3])
             self.resolvers.append(str(resolver)[2:-3])
         self.series = []
         for i in range(0, len(self.resolvers)):
