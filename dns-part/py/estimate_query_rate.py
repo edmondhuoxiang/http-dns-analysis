@@ -84,10 +84,6 @@ class Record:
             ts = str(record["ts"])[10:-3]
             ttls = record["ttls"]
             orig = record["orig_h"]
-           ''' print 'orig_h : %s' % orig
-            print 'ttls :'
-            print ttls
-'''
             for i in range(0, len(self.resolvers)):
                 if orig == self.resolvers[i]:
                     ttl = 0.0
