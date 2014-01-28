@@ -81,7 +81,7 @@ class Record:
             record = cur.fetchone()
             if record == None:
                 break
-            ts = record["ts"]
+            ts = str(record["ts"])[10:-3]
             ttls = record["ttls"]
             orig = record["orig_h"]
             print 'orig_h : %s' % orig
@@ -120,11 +120,16 @@ class Record:
             while index < (len(self.series[j])-1-del_num):
                 num1 = int(self.series[j][index][0])
                 num2 = int(self.series[j][index+1][0])
+                ttl = self.series[j][index][1]
+                if ttl < 0:
+                    del self.series[j][index]
+                    del_num = del_num + 1
+                    continue
                 if num1 == num2:
                     del self.series[j][index+1]
                     del_num = del_num + 1
-                else:
-                    index = index +1
+                    continue 
+                index = index +1
             flag = False
             print '***'
             for i in range(0, len(self.series[j])-1):
