@@ -110,9 +110,7 @@ class Record:
             del_num = 0
             index = 0
             while index < (len(self.series[j])-1-del_num):
-                print self.series[j][index][0]
                 num1 = int(self.series[j][index][0])
-                print self.series[j][index+1][0]
                 num2 = int(self.series[j][index+1][0])
                 ttl = self.series[j][index][1]
                 if ttl < 0:
@@ -125,9 +123,6 @@ class Record:
                     continue 
                 index = index +1
             flag = False
-            print '***'
-            for i in range(0, len(self.series[j])-1):
-                print self.series[j][i]
             for i in range(0, len(self.series[j])-1):
                 ts_1 = int(self.series[j][i+1][0])
                 ts_0 = int(self.series[j][i][0])
