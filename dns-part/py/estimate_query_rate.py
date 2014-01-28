@@ -39,8 +39,9 @@ def getDomains(tname):
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
         exit(1)
+    results = []
     for domain in domains:
-        domain = str(domain)[2:-3]
+        results.append(str(domain)[2:-3])
     return domains
 
 def main():
