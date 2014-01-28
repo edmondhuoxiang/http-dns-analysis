@@ -84,6 +84,9 @@ class Record:
             ts = record["ts"]
             ttls = record["ttls"]
             orig = record["orig_h"]
+            print 'orig_h : %s' % orig_h
+            print 'ttls :'
+            print ttls
 
             for i in range(0, len(self.resolvers)):
                 if orig == self.resolvers[i]:
