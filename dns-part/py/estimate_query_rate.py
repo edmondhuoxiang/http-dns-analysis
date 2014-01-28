@@ -40,7 +40,7 @@ def getDomains(tname):
         Log.error('%s : %s' %(tname, e))
         exit(1)
     for domain in domains:
-        domain = str(domain)
+        domain = str(domain)[2:-3]
     return domains
 
 def main():
