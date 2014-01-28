@@ -84,7 +84,7 @@ class Record:
             ts = record["ts"]
             ttls = record["ttls"]
             orig = record["orig_h"]
-            print 'orig_h : %s' % orig_h
+            print 'orig_h : %s' % orig
             print 'ttls :'
             print ttls
 
