@@ -43,7 +43,7 @@ def getDomains(tname):
 
 def main():
     data_to_process = '20130901'
-    dns_tname = 'log_'+data_to_process
+    dns_tname = 'dns_'+data_to_process
     domains = getDomains(dns_tname)
     for domain in domains:
         print domain
