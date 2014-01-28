@@ -34,13 +34,13 @@ def getDomains(tname):
     domains = []
     global cur
     try:
-        cur.execute('select distinct(query) from %s;' % tname)
+        cur.execute('select distinct(query) from %s limit 10;' % tname)
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
         exit(1)
     for domain in domains:
-        domain = domain[2:-3]
+        domain = str(domain)
     return domains
 
 def main():
