@@ -93,7 +93,7 @@ class Record:
 
     def estimate_rate(self):
         result = []
-        for j in range(0, len(self.resolver)):
+        for j in range(0, len(self.resolvers)):
             if len(self.series[j]) < MIN_SERIES_SIZE:
                 result.append(-1)
                 continue
@@ -127,9 +127,12 @@ class Record:
         return result
 
 def estimate_day(tname):
+    print 'Estimating data of a data ....'
     domains = getDomains(tname)
+    print 'Get all distinct domain ....'
     domain_rates = {}
     for domain in domains:
+        print 'Processing domain : %s' % domain
         r = Record(tname, domain)
         domain = r.domain
         resolvers = r.resolvers
@@ -138,7 +141,9 @@ def estimate_day(tname):
         if domain not in domain_rates:
             domain_rates[domain] = []
         for i in range(0, len(query_rate)):
+            print 'Roselver : %s\t Rate : %f\n' %(resovlers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
+
 
     rates = domain_rates.items()
     return rates
