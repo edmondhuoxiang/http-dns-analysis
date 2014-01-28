@@ -43,7 +43,6 @@ def getDomains(tname):
         exit(1)
     results = []
     for domain in domains:
-        print str(domain)
         results.append(str(domain)[2:-2])
     return results 
 
@@ -94,9 +93,9 @@ class Record:
                     self.series[i].append([ts, ttl])
                     if ttl > self.max_ttl:
                         self.max_ttl = ttl
-        print 'SERIES'
-        print self.series
-        self.series.sort(key=itemgetter(0))
+        
+        for i in range(0, len(self.series):
+            self.series[i].sort(key=itemgetter(0))
 
     def estimate_rate(self):
         result = []
