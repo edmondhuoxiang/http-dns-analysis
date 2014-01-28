@@ -81,6 +81,7 @@ class Record:
             record = cur.fetchone()
             if record == None:
                 break
+            print '!!!!!'
             print str(record["ts"])
             ts = str(record["ts"])[10:-3]
             ttls = record["ttls"]
