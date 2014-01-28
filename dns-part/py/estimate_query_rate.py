@@ -112,7 +112,7 @@ class Record:
                         delta = delta_x
                     else:
                         print "Warning! Queries arriving faster than TTL should allow"
-                        print self.domain, ts_1, ts_0, ts_1-ts_=, self.max_ttl
+                        print self.domain, ts_1, ts_0, ts_1-ts_0, self.max_ttl
                         result.append(-1)
                         flag = True
                         break
