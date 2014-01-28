@@ -42,6 +42,7 @@ def getDomains(tname):
         exit(1)
     results = []
     for domain in domains:
+        print str(domain)
         results.append(str(domain)[2:-3])
     return results 
 
