@@ -95,6 +95,8 @@ class Record:
                         self.series[i].append([ts, ttl])
                         if ttl > self.max_ttl:
                             self.max_ttl = ttl
+        print 'SERIES'
+        print self.seires
         self.series.sort(key=itemgetter(0))
         print 'max_ttl: %d' % self.max_ttl
         for item in self.series:
