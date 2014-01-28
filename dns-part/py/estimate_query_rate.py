@@ -18,7 +18,7 @@ import logging as Log
 
 con = None
 r = redis.StrictRedis(host='localhost', port=6379,db=0)
-Log.basicConfig(filename='./http2db.log',format='%(asctime)s %(message)s', level=Log.INFO)
+Log.basicConfig(filename='./estimate_query_rate.log',format='%(asctime)s %(message)s', level=Log.INFO)
 tcolumns = '(ts, orig_h, resp_h, host, uri, referrer, method, user_agent, status_code)'
 
 try:
