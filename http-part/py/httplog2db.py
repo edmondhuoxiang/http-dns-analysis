@@ -117,13 +117,13 @@ def main():
     data_to_process = '20130901'
     logdir = '/raid/brologs/%s' % data_to_process
     if os.path.exists(logdir):
-        tname = 'log_' + data_to_process + '_rawts'
+        tname = 'log_' + data_to_process + '_rawts_test'
         try:
             cur.execute(create_new_table % tname)
         except pg.DatabaseError, e:
             Log.error('Creating new table %s failed : %s' %(tname, e.pgerror))
             sys.exit(1)
-        logfiles = glob.glob(logdir + '/http-requests*.gz')
+        logfiles = glob.glob(logdir + '/http-requests.1377990000.*.gz')
         if logfiles:
             for logfile in logfiles:
                 log2db(logfile, tname)
