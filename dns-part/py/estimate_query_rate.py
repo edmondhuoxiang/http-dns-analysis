@@ -61,7 +61,7 @@ class Record:
             resolver = cur.fetchone()
             if resolver == None:
                 break
-            print 'Resolver: %s' %(str(resovler))
+            print 'Resolver: %s' %(str(resolver))
             self.resolvers.append(str(resolver)[2:-2])
         self.series = []
         for i in range(0, len(self.resolvers)):
