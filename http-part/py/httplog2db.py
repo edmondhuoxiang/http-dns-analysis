@@ -119,11 +119,12 @@ def main():
     if os.path.exists(logdir):
         tname = 'log_' + data_to_process + '_rawts_test'
         try:
+            cur.execute('DROP TABLE IF EXISTS %s;' % tname)
             cur.execute(create_new_table % tname)
         except pg.DatabaseError, e:
             Log.error('Creating new table %s failed : %s' %(tname, e.pgerror))
             sys.exit(1)
-        logfiles = glob.glob(logdir + '/http-requests.1377990000.*.gz')
+        logfiles = glob.glob(logdir + '/http-requests.*.gz')
         if logfiles:
             for logfile in logfiles:
                 log2db(logfile, tname)
