@@ -30,6 +30,12 @@ except pg.DatabaseError, e:
     Log.error(e.pgerror)
     sys.exit(1)
 
+def calculateDate(orig_str, offset):
+    orig_date = datetime.strptime(orig_str, '%Y%m%d')
+    d = timedelta(days = offset)
+    new_date = orig_date + d
+    return new_date.strftime('%Y%m%d')
+
 def asDigitBinary(source):
     return '{0:08b}'.format(source)
 
@@ -102,6 +108,19 @@ def log2db(lfile, tname):
             continue
         try:
             answerArr = keyval['answers'].split(',')
+            ttlArr = keyval['TTLs'].split(',')
+            if len(answerArr) != len(ttlArr):
+                print 'Error on record with timestamp as %s' %keyval['ts']
+                continue
+            for index in range(0, len(answerArr)):
+                answer = answerArr[index]
+                ttl = ttlArr[index]
+                if ttl == '-\n':
+                   ttl = '-1'
+                (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstrip(),keyval['rcode'].rstrip(), answer, ttl)))
+                ctr = ctr + 1
+            '''
+            answerArr = keyval['answers'].split(',')
             answers = "{"
             for answer in answerArr:
                 answers = answers + "\"" + answer + "\","
@@ -112,11 +131,12 @@ def log2db(lfile, tname):
             else:
                 ttls = ttls + keyval['TTLs'][:-1] + "}"
             (records.append((keyval['ts'], keyval['id.orig_h'], keyval['id.resp_h'], keyval['query'][:256].rstrip(),keyval['rcode'].rstrip(), answers.rstrip(), ttls.rstrip())))
+            '''
         except Exception, e:
             Log.error('%s : %s' %(lfile,e))
             print fieldnames
             pass
-        ctr = ctr + 1
+        #ctr = ctr + 1
         if ctr % 10000 == 0:
             if ctr % 50000 == 0:
                 print '%d......' % ctr
@@ -132,11 +152,11 @@ def log2db(lfile, tname):
 
 def main():
     create_new_table = '''CREATE TABLE %s
-    (id serial primary key NOT NULL, ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text[], ttls double precision[]);'''
+    (id serial primary key NOT NULL, ts numeric, orig_h inet, resp_h inet, query character varying(256), rcode character varying(2), answers text, ttls double precision);'''
     data_to_process = '20130901'
     logdir = '/raid/pdns_bro/%s' % data_to_process
     if os.path.exists(logdir):
-        tname = 'dns_' + data_to_process + '_2'
+        tname = 'dns_' + data_to_process 
         try:
             cur.execute(create_new_table % tname)
         except pg.DatabaseError, e:
@@ -144,6 +164,18 @@ def main():
             sys.exit(1)
         logfiles = glob.glob(logdir + '/*.log.gz')
         
+        if logfiles:
+            for logfile in logfiles:
+                print 'processing %s' %logfile
+                log2db(logfile, tname)
+        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(date_to_process, 1))
+        logfiles = glob.glob(candidate_logdir + '/*.log.gz')
+        if logfiles:
+            for logfile in logfiles:
+                print 'processing %s' %logfile
+                log2db(logfile, tname)
+        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(date_to_process, -1))
+        logfiles = glob.glob(candidate_logdir + '/*.log.gz')
         if logfiles:
             for logfile in logfiles:
                 print 'processing %s' %logfile
