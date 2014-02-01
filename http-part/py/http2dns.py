@@ -17,6 +17,8 @@ import glob
 import gzip
 import logging as Log
 import decimal
+import pytz
+
 
 con = None
 r = redis.StrictRedis(host='localhost', port=6379,db=0)
@@ -32,122 +34,52 @@ except pg.DatabaseError, e:
     Log.error(e.pgerror)
     sys.exit(1)
 
+def getTimeWindowOfDay(date, tz):
+    timezone = pytz.timezone(tz)
+    begin = date + ' 0:0:0'
+    end = date + ' 23:59:59'
+
+    date_begin = datetime.strptime(begin, "%Y%m%d %H:%M:%S")
+    date_end = datetime.strptime(end, "%Y%m%d %H:%M:%S")
+    date_begin_localized = timezone.localize(date_begin, is_dst=None)
+    date_end_localized = timezone.localize(date_end, is_dst=None)
+    return [time.mktime(date_begin_localized.timetuple()), time.mktime(date_end_localized.timetuple())]
+
 def http2dns(httpTable, dnsTable, tname):
     records = []
     ctr = 0
     multi = 0
     global cur
-    
-    try:
-        cur.execute('SELECT MIN(ts) from %s;' %(dnsTable))
-        min1 = cur.fetchone()
-        cur.execute('SELECT MIN(ts) from %s;' %(httpTable))
-        min2 = cur.fetchone()
-        mints = 0.0
-        if min1 <  min2:
-            mints = min2
-        else:
-            mints = min1
-        cur.execute('SELECT * FROM %s where ts > %s LIMIT 5000;' %(httpTable, str(mints)[10:-3]))
+
+    data_to_process = tname[-8:]
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern') #time window
+
+    try: 
+        cur.execute('SELECT DISTINCT HOST FROM %s WHERE ts>%s AND ts<%s;' % (httpTable, tw[0], tw[1]))
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(httpTable, e.pgerror))
         exit(1)
-    http_rows = cur.fetchall()
-    for http_row in http_rows:
-        http_ts = http_row["ts"]
-        domain = http_row["host"]
-        http_resp = http_row["resp_h"]
-        http_orig = http_row["orig_h"]
-        http_id = http_row["id"]
+    domains = cur.fetchall()
+    for domain in domains:
+        print 'Processing domain %s' %(domain)
+        command = '''
+        INSERT INTO %s 
+        SELECT %s.id, %s.id, %s.ts, %s.ts, %s.host, %s.ttls, %s.orig_h, %s.resp_h, %s.orig_h, %s.resp_h 
+        FROM %s LEFT JOIN %s
+        ON ((%s.host = \'%s\' OR %s.host = \'%s\') AND (%s.host = \'%s\' OR %s.query = \'%s\') AND %s.ts > %s.ts AND %s.ts < (%s.ts+%s.ttls) AND %s.ts > %s AND %s.ts < %s);
+        '''
         domain_brief = ''
         if domain.split('.') == 'www':
-            domain_brief = '.'.join(domain.split('.')[1:])
+            domain.brief = '.'.join(domain.split('.')[1:])
         else:
             domain_brief = domain
-        
+
         try:
-            print 'Finding #%s, domain : %s' %(http_id, domain)
-            cur.execute('SELECT * FROM %s WHERE ts < %s and ts > 0 and ts > (%s - 3600) and (query = \'%s\' or query = \'%s\') order by ts desc;'% (dnsTable, http_ts, http_ts, domain, domain_brief))
+            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable,httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1]))
         except pg.DatabaseError, e:
-            Log.error('%s : %s' %(dnsTable, e.pgerror))
+            Log.error('%s : %s' %(httpTable, e.pgerror))
             exit(1)
-        dns_id = -1
-        flag = False # Mark the current http record has been correlate with at least one dns record
-        while True:
-            dns_row = cur.fetchone() 
-            if dns_row == None:
-                break
-            answers = dns_row["answers"]
-            ttls = dns_row["ttls"]
-            ttl = 0.0
-            for i in range(0, len(answers)):
-                if answers[i] == http_resp:
-                    ttl = ttls[i]
-                    break
-            dns_ts = dns_row["ts"]
-            if decimal.Decimal(dns_ts) > (decimal.Decimal(http_ts) - decimal.Decimal(ttl)):
-                continue
-            flag = True
-            dns_id = dns_row["id"]
-            dns_orig = dns_row["orig_h"]
-            dns_resp = dns_row["resp_h"]
-            try:
-                print 'Get One! %d' % ctr
-                (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
-                ctr = ctr + 1
-
-            except Exception, e:
-                Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
-                pass
-            '''
-            if ctr % 100 == 0:
-                args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
-                try:
-                    cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
-                    del records[:]
-                    args = ''
-                except pg.DatabaseError, e:
-                    Log.error('%s : %s' %(tname, e.pgerror))
-                    continue
-                if ctr % 50000 == 0:
-                    print '%d...' % ctr'''
-        if flag == False:
-            dns_id = -1
-            dns_ts = -1
-            ttl = 0.0
-            dns_orig = '0.0.0.0'
-            dns_resp = '0.0.0.0'
-            try:
-                print 'Found none for this http record %d' %ctr
-                (records.append((dns_id, http_id, dns_ts, http_ts, domain, ttl, dns_orig, dns_resp, http_orig, http_resp)))
-                ctr = ctr + 1
-            except Exception, e:
-                Log.error('%s : %s : %s' %(dnsTable, httpTable, e))
-                pass
-        
-        if ((ctr + 1)/100) > multi:
-            args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
-            try:
-                cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
-                del records[:]
-                args = ''
-            except pg.DatabaseError, e:
-                Log.error('%s : %s' %(tname, e.pgerror))
-                continue
-            if ctr % 50000 == 0:
-                print '%d...' % ctr
-        flag = False
-        multi = (ctr + 1)/100
-    if records:
-        args = ','.join(cur.mogrify("(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", r) for r in  records)
-        try:
-            cur.execute('INSERT INTO %s %s VALUES %s' %(tname, tcolumns, args))
-        except pg.DatabaseError, e:
-            Log.error('%s : %s' %(tname, e.pgerror))
-    Log.info('%d records were logged table %s from %s and %s' %(ctr, tname, dnsTable, httpTable))
-    logfile.close()
     return
-
         
        
 def main():
