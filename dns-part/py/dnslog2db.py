@@ -158,6 +158,7 @@ def main():
     if os.path.exists(logdir):
         tname = 'dns_' + data_to_process 
         try:
+            cur.execute('DROP TABLE IF EXSITS %s;' % tname)
             cur.execute(create_new_table % tname)
         except pg.DatabaseError, e:
             Log.error('Creating new table %s failed : %s' % (tname, e.pgerror))
@@ -168,13 +169,13 @@ def main():
             for logfile in logfiles:
                 print 'processing %s' %logfile
                 log2db(logfile, tname)
-        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(date_to_process, 1))
+        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(data_to_process, 1))
         logfiles = glob.glob(candidate_logdir + '/*.log.gz')
         if logfiles:
             for logfile in logfiles:
                 print 'processing %s' %logfile
                 log2db(logfile, tname)
-        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(date_to_process, -1))
+        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(data_to_process, -1))
         logfiles = glob.glob(candidate_logdir + '/*.log.gz')
         if logfiles:
             for logfile in logfiles:
