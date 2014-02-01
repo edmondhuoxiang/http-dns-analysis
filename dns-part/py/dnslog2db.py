@@ -169,13 +169,13 @@ def main():
             for logfile in logfiles:
                 print 'processing %s' %logfile
                 log2db(logfile, tname)
-        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(data_to_process, 1))
+        candidate_logdir = '/raid/pdns_bro/%s' %(calculateDate(data_to_process, 1))
         logfiles = glob.glob(candidate_logdir + '/*.log.gz')
         if logfiles:
             for logfile in logfiles:
                 print 'processing %s' %logfile
                 log2db(logfile, tname)
-        candidate_logdir = 'raid/pdns_bro/%s' %(calculateDate(data_to_process, -1))
+        candidate_logdir = '/raid/pdns_bro/%s' %(calculateDate(data_to_process, -1))
         logfiles = glob.glob(candidate_logdir + '/*.log.gz')
         if logfiles:
             for logfile in logfiles:
