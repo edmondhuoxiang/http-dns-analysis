@@ -67,16 +67,17 @@ def http2dns(httpTable, dnsTable, tname):
         INSERT INTO %s 
         SELECT %s.id, %s.id, %s.ts, %s.ts, %s.host, %s.ttls, %s.orig_h, %s.resp_h, %s.orig_h, %s.resp_h 
         FROM %s LEFT JOIN %s
-        ON ((%s.host = \'%s\' OR %s.host = \'%s\') AND (%s.query = \'%s\' OR %s.query = \'%s\') AND %s.ts > %s.ts AND %s.ts < (%s.ts+%s.ttls) AND %s.ts > %s AND %s.ts < %s);
+        ON (%s.host = %s.query AND %s.ts > %s.ts AND %s.ts < (%s.ts+%s.ttls) AND %s.ts > %s AND %s.ts < %s)
+        WHERE (%s.host = \'%s\' OR %s = \'%s\')
         '''
         domain_brief = ''
         if domain.split('.') == 'www':
             domain.brief = '.'.join(domain.split('.')[1:])
         else:
             domain_brief = domain
-        print command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, domain, httpTable, domain_brief, dnsTable, domain, dnsTable, domain_brief, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1])
+            print command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1], httpTable, domain, httpTable, domain_brief)
         try:
-            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, domain, httpTable, domain_brief, dnsTable, domain, dnsTable, domain_brief, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1]))
+            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1], httpTable, domain, httpTable, domain_brief))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(httpTable, e.pgerror))
             exit(1)
