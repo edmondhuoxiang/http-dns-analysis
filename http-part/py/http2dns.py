@@ -69,6 +69,7 @@ def http2dns(httpTable, dnsTable, tname):
         ON ((%s.host = \'%s\' OR %s.host = \'%s\') AND (%s.host = \'%s\' OR %s.query = \'%s\') AND %s.ts > %s.ts AND %s.ts < (%s.ts+%s.ttls) AND %s.ts > %s AND %s.ts < %s);
         '''
         domain_brief = ''
+        print domain
         if domain.split('.') == 'www':
             domain.brief = '.'.join(domain.split('.')[1:])
         else:
