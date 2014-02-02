@@ -69,17 +69,36 @@ class Record:
 
 
         try:
-            cur.execute('SELECT * FROM %s where query = \'%s\';' %(tname, query))
+            cur.execute('SELECT * FROM %s where query = \'%s\' order by orig_h, ts;' %(tname, query))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(tname, e))
             exit(1)
         self.domain = query
         self.max_ttl = 0
 
+        ts = 0.0
+        num = 0
+        orig = ''
         while True:
             record = cur.fetchone()
             if record == None:
                 break
+            if ts == float(str(record["ts"])):
+                ttl = ttl + record["ttls"]
+                num = num + 1
+            else:
+                if orig != '':
+                    ttl = float(ttl)/num
+                    for i in range(0, len(self.resolvers)):
+                        if orig == self.resolvers[i]:
+                            self.series[i].append([ts,ttl])
+                ts = float(str(record["ts"]))
+                ttl = record["ttls"]
+                orig = record["orig_h"]
+                num = 1
+            if record["ttls"] > self.max_ttl:
+                self.max_ttl = record["ttls"]
+'''
             ts = float(str(record["ts"]))
             ttls = record["ttls"]
             orig = record["orig_h"]
@@ -93,7 +112,7 @@ class Record:
                     self.series[i].append([ts, ttl])
                     if ttl > self.max_ttl:
                         self.max_ttl = ttl
-        
+'''        
         for i in range(0, len(self.series)):
             self.series[i].sort(key=itemgetter(0))
 
