@@ -67,7 +67,7 @@ def http2dns(httpTable, dnsTable, tname):
         INSERT INTO %s 
         SELECT %s.id, %s.id, %s.ts, %s.ts, %s.host, %s.ttls, %s.orig_h, %s.resp_h, %s.orig_h, %s.resp_h 
         FROM %s LEFT JOIN %s
-        ON ((%s.host = \'%s\' OR %s.host = \'%s\') AND (%s.host = \'%s\' OR %s.query = \'%s\') AND %s.ts > %s.ts AND %s.ts < (%s.ts+%s.ttls) AND %s.ts > %s AND %s.ts < %s);
+        ON ((%s.host = \'%s\' OR %s.host = \'%s\') AND (%s.query = \'%s\' OR %s.query = \'%s\') AND %s.ts > %s.ts AND %s.ts < (%s.ts+%s.ttls) AND %s.ts > %s AND %s.ts < %s);
         '''
         domain_brief = ''
         if domain.split('.') == 'www':
