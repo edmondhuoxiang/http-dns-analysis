@@ -75,7 +75,6 @@ def http2dns(httpTable, dnsTable, tname):
             domain.brief = '.'.join(domain.split('.')[1:])
         else:
             domain_brief = domain
-            print command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1], httpTable, domain, httpTable, domain_brief)
         try:
             cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1], httpTable, domain, httpTable, domain_brief))
         except pg.DatabaseError, e:
