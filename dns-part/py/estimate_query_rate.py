@@ -100,24 +100,7 @@ class Record:
                 self.max_ttl = record["ttls"]
         for i in range(0, len(self.series)):
             self.seires[i].sort(key=itemgetter(0))
-'''
-            ts = float(str(record["ts"]))
-            ttls = record["ttls"]
-            orig = record["orig_h"]
-            for i in range(0, len(self.resolvers)):
-                if orig == self.resolvers[i]:
-                    ttl = 0.0
-                    for j in range(0, len(ttls)):
-                        ttl = ttl + ttls[j]
-                    ttl = float(ttl)/len(ttls)
-                    #if ttl > 0:
-                    self.series[i].append([ts, ttl])
-                    if ttl > self.max_ttl:
-                        self.max_ttl = ttl
-
-        for i in range(0, len(self.series)):
-            self.series[i].sort(key=itemgetter(0))
-'''
+    
     def estimate_rate(self):
         result = []
         for j in range(0, len(self.resolvers)):
