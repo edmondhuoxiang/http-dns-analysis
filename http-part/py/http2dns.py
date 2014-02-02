@@ -61,7 +61,7 @@ def http2dns(httpTable, dnsTable, tname):
         exit(1)
     domains = cur.fetchall()
     for row in domains:
-        domain = str(row)
+        domain = str(row)[2:-2]
         print 'Processing domain %s' %(domain)
         command = '''
         INSERT INTO %s 
@@ -76,7 +76,7 @@ def http2dns(httpTable, dnsTable, tname):
             domain_brief = domain
 
         try:
-            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable,httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1]))
+            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable,httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, httpTable, domain, brief_domain, dnsTable, dnsTable, domain, brief_domain, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1]))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(httpTable, e.pgerror))
             exit(1)
