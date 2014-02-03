@@ -76,7 +76,7 @@ def http2dns(httpTable, dnsTable, tname):
         else:
             domain_brief = domain
         try:
-            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1], httpTable, domain, httpTable, domain_brief))
+            cur.execute(command % (tname, dnsTable, httpTable, dnsTable, httpTable, httpTable, dnsTable, dnsTable, dnsTable, httpTable, httpTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, httpTable, dnsTable, dnsTable, httpTable, tw[0], httpTable, tw[1], httpTable, domain, httpTable, domain_brief))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(httpTable, e.pgerror))
             exit(1)
