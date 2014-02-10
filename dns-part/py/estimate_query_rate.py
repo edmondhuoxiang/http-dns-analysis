@@ -5,7 +5,7 @@ Created on 01/27/2014
 
 @author: Xiang Huo
 '''
-
+#import pdb
 import sys, os, re
 from operator import itemgetter
 from datetime import datetime, timedelta
@@ -81,13 +81,16 @@ class Record:
         ts = 0.0
         num = 0
         orig = ''
+	ttl = 0.0
         while True:
+            #pdb.set_trace()
             record = cur.fetchone()
             if record == None:
                 break
-            if ts != float(str(record["ts"])):
+            if ts == float(str(record["ts"])):
                 ttl = ttl + record["ttls"]
                 num = num + 1
+		ts = float(str(record["ts"]))
             else:
                 if orig != '':
                     ttl = float(ttl)/num
@@ -100,6 +103,10 @@ class Record:
                 num = 1
             if record["ttls"] > self.max_ttl:
                 self.max_ttl = record["ttls"]
+	ttl = float(ttl)/num
+	for i in range(0, len(self.resolvers)):
+	    if orig == self.resolvers[i]:
+	        self.series[i].append([ts, ttl])
         for i in range(0, len(self.series)):
             self.series[i].sort(key=itemgetter(0))
     
@@ -182,16 +189,17 @@ def estimate_day(tname):
         for i in range(0, len(query_rate)):
             print 'Roselver : %s\t Rate : %f\n' %(resolvers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
-        str = ''
+        string = ''
         for i in range(0, len(query_rate)):
             print "writing to file..."
             if query_rate[i] > 0 and flag == False:
-                str += domain
+                string += domain
                 flag = True
             if query_rate[i] > 0:
-                str += '\t'+resolvers[i]+','+query_rate[i]
+                string += '\t'+resolvers[i]+','+str(query_rate[i])
+	string += '\n'
         if flag == True:
-            output.write(str)
+            output.write(string)
                 
             
     rates = domain_rates.items()
@@ -201,7 +209,7 @@ def estimate_day(tname):
 def main():
     data_to_process = '20131001'
     dns_tname = 'dns_'+data_to_process
-    output.write("#The estimated date is : %s" % data_to_process)
+    output.write("#The estimated date is : %s\n" % data_to_process)
     rates = estimate_day(dns_tname)
     #output = open('query_rate_by_day.data', 'w')
     #for domain, query_rate in rates:
