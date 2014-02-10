@@ -38,7 +38,7 @@ def getDomains(tname):
     global cur
     try:
         #cur.execute('select distinct(query) from %s limit 10;' % tname)
-        cur.execute('select distinct query from %s group by query having count(*) > 10 WHERE rcode != \'-\' AND ttls >= 0 limit 10;' % tname)
+        cur.execute('select distinct query from %s WHERE rcode != \'-\' AND ttls >= 0 group by query having count(*) > 10 limit 10;' % tname)
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -71,7 +71,7 @@ class Record:
 
 
         try:
-            cur.execute('SELECT * FROM %s where query = \'%s\' WHERE rcode != \'-\' AND ttls >= 0 ORDER BY orig_h, ts, id;' %(tname, query))
+            cur.execute('SELECT * FROM %s where query = \'%s\' AND rcode != \'-\' AND ttls >= 0 ORDER BY orig_h, ts, id;' %(tname, query))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(tname, e))
             exit(1)
@@ -188,7 +188,7 @@ def estimate_day(tname):
             if query_rate[i] > 0 and flag == False:
                 str += domain
                 flag = True
-            if query_rate[i] > 0
+            if query_rate[i] > 0:
                 str += '\t'+resolvers[i]+','+query_rate[i]
         if flag == True:
             output.write(str)
@@ -201,7 +201,7 @@ def estimate_day(tname):
 def main():
     data_to_process = '20131001'
     dns_tname = 'dns_'+data_to_process
-    output.write("#The estimated date is : %s", data_to_process)
+    output.write("#The estimated date is : %s" % data_to_process)
     rates = estimate_day(dns_tname)
     #output = open('query_rate_by_day.data', 'w')
     #for domain, query_rate in rates:
