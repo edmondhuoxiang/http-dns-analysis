@@ -22,6 +22,8 @@ r = redis.StrictRedis(host='localhost', port=6379,db=0)
 Log.basicConfig(filename='./estimate_query_rate.log',format='%(asctime)s %(message)s', level=Log.INFO)
 tcolumns = '(ts, orig_h, resp_h, host, uri, referrer, method, user_agent, status_code)'
 
+output = open('query_rate_by_day.data', 'w')
+
 try:
     con = pg.connect(database='tds', user='tds', host='localhost', password='9bBJPLr9')
     con.autocommit = True
@@ -36,7 +38,7 @@ def getDomains(tname):
     global cur
     try:
         #cur.execute('select distinct(query) from %s limit 10;' % tname)
-        cur.execute('select distinct query from %s group by query having count(*) > 10;' % tname)
+        cur.execute('select distinct query from %s group by query having count(*) > 10 WHERE rcode != \'-\' AND ttls >= 0 limit 10;' % tname)
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -69,7 +71,7 @@ class Record:
 
 
         try:
-            cur.execute('SELECT * FROM %s where query = \'%s\' order by orig_h, ts;' %(tname, query))
+            cur.execute('SELECT * FROM %s where query = \'%s\' WHERE rcode != \'-\' AND ttls >= 0 ORDER BY orig_h, ts, id;' %(tname, query))
         except pg.DatabaseError, e:
             Log.error('%s : %s' %(tname, e))
             exit(1)
@@ -83,7 +85,7 @@ class Record:
             record = cur.fetchone()
             if record == None:
                 break
-            if ts == float(str(record["ts"])):
+            if ts != float(str(record["ts"])):
                 ttl = ttl + record["ttls"]
                 num = num + 1
             else:
@@ -143,6 +145,8 @@ class Record:
                         print self.domain, ts_1, ts_0, ts_1-ts_0, self.max_ttl
                         result.append(-1)
                         flag = True
+                        Log.error("Warning! Queries arriving faster than TTL should allow")
+                        Log.error(self.domain)
                         break
                 estimate += delta
                 count += 1
@@ -157,8 +161,12 @@ class Record:
         return result
 
 def estimate_day(tname):
-    print 'Estimating data of a data ....'
+    global output
+    print 'Estimating data of a date ....'
     domains = getDomains(tname)
+    domains.append('google.com')
+    domains.append('youtube.com')
+    domains.append('facebook.com')
     print 'Get all distinct domain ....'
     domain_rates = {}
     for domain in domains:
@@ -170,22 +178,35 @@ def estimate_day(tname):
 
         if domain not in domain_rates:
             domain_rates[domain] = []
+        flag = False
         for i in range(0, len(query_rate)):
             print 'Roselver : %s\t Rate : %f\n' %(resolvers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
-
-
+        str = ''
+        for i in range(0, len(query_rate)):
+            print "writing to file..."
+            if query_rate[i] > 0 and flag == False:
+                str += domain
+                flag = True
+            if query_rate[i] > 0
+                str += '\t'+resolvers[i]+','+query_rate[i]
+        if flag == True:
+            output.write(str)
+                
+            
     rates = domain_rates.items()
     return rates
 
 
 def main():
-    data_to_process = '20130901'
+    data_to_process = '20131001'
     dns_tname = 'dns_'+data_to_process
+    output.write("#The estimated date is : %s", data_to_process)
     rates = estimate_day(dns_tname)
-    output = open('query_rate_by_day.data', 'w')
-    for domain, query_rate in rates:
-        output.write("%s\t%s\n" %(domain, query_rate))
+    #output = open('query_rate_by_day.data', 'w')
+    #for domain, query_rate in rates:
+    #    if query_rate > 0 :
+    #        output.write("%s\t%s\n" %(domain, query_rate))
     output.close()
 
 if __name__ == '__main__':
