@@ -63,10 +63,10 @@ def getDomainsFromDB(tname, dev):
         min_index = 0
         max_index = count
     else:
-        min_index = count/2-dev
-        max_index = count/2+dev
+        min_index = 10000-dev
+        max_index = 10000+dev
     try:
-        cur.execute('SELECT domain from %s WHERE id > %d and %d < %d;' % (tname, min_index, max_index))
+        cur.execute('SELECT domain from %s WHERE id > %d and id < %d;' % (tname, min_index, max_index))
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -145,7 +145,7 @@ class Record:
                 result.append(-1)
                 continue
 
-	    print self.series[j]
+	    #print self.series[j]
             estimate = 0
             count = 0
             del_num = 0
@@ -234,17 +234,19 @@ def estimate_day(tname, estimate_tname):
             output.write(string)
 
             try:
-                cur.execute('SELECT count from %s where domain =\'%s\';)'%(estimate_tname, domain))
+                #print 'SELECT count from %s where domain =\'%s\';)'%(estimate_tname, domain)
+                cur.execute('SELECT count from %s where domain =\'%s\';'%(estimate_tname, domain))
             except pg.DatabaseError, e:
                 Log.error('%s : %s : %s' %(estimate_tname, domain, e.pgerror))
-            count = cur.fetchone()
+            count = int(str(cur.fetchone())[1:-1])
+	    #print count
             estimate_vol = global_rate * 24 * 3600
             distance = abs(estimate_vol - count)
 
             try:
-                cur.execute('UPDATE %s SET rate = %f, estimate_vol = %f, distance = %f where domain = \'%s\';' %(estimate_tname, global_rate, estimate_vol, distance, domain))
+                cur.execute('UPDATE %s SET rate = %f, estimated_vol = %f, distance = %f where domain = \'%s\';' %(estimate_tname, global_rate, estimate_vol, distance, domain))
             except pg.DatabaseError, e:
-                Log.error('%s : %s' %(estimate_table, e))
+                Log.error('%s : %s' %(estimate_tname, e))
     rates = domain_rates.items()
     return rates
 
