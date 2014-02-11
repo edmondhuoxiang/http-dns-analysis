@@ -5,7 +5,7 @@ Created on 01/27/2014
 
 @author: Xiang Huo
 '''
-#import pdb
+import pdb
 import sys, os, re
 from operator import itemgetter
 from datetime import datetime, timedelta
@@ -38,7 +38,7 @@ def getDomains(tname):
     global cur
     try:
         #cur.execute('select distinct(query) from %s limit 10;' % tname)
-        cur.execute('select distinct query from %s WHERE rcode != \'-\' AND ttls >= 0 group by query having count(*) > 10 limit 10;' % tname)
+        cur.execute('select distinct query from %s WHERE rcode != \'-\' AND ttls >= 0 group by query having count(*) > 10 limit 500;' % tname)
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -48,6 +48,33 @@ def getDomains(tname):
         results.append(str(domain)[2:-2])
     return results 
 
+def getDomainsFromDB(tname, dev):
+    domains = []
+    global cur
+    try:
+        cur.execute('SELECT count(*) from %s;' % tname)
+    except pg.DatabaseError, e:
+        Log.error('%s : %s' %(tname, e))
+        exit(1)
+    count = cur.fetchone()
+    min_index = 0
+    max_index = 0
+    if count < (2*dev):
+        min_index = 0
+        max_index = count
+    else:
+        min_index = count/2-dev
+        max_index = count/2+dev
+    try:
+        cur.execute('SELECT domain from %s WHERE id > %d and %d < %d;' % (tname, min_index, max_index))
+        domains = cur.fetchall()
+    except pg.DatabaseError, e:
+        Log.error('%s : %s' %(tname, e))
+        exit(1)
+    results = []
+    for domain in domains:
+        results.append(str(domain)[2:-2])
+    return results
 MIN_SERIES_SIZE = 10
 
 class Record:
@@ -118,23 +145,25 @@ class Record:
                 result.append(-1)
                 continue
 
+	    print self.series[j]
             estimate = 0
             count = 0
             del_num = 0
             index = 0
-            while index < (len(self.series[j])-1-del_num):
-                num1 = int(self.series[j][index][0])
-                num2 = int(self.series[j][index+1][0])
-                ttl = self.series[j][index][1]
-                if ttl < 0:
-                    del self.series[j][index]
-                    del_num = del_num + 1
-                    continue
-                if num1 == num2:
-                    del self.series[j][index+1]
-                    del_num = del_num + 1
-                    continue 
-                index = index +1
+            #while index < (len(self.series[j])-1):
+            #    num1 = int(self.series[j][index][0])
+            #    num2 = int(self.series[j][index+1][0])
+            #    ttl = self.series[j][index][1]
+            #    if ttl < 0:
+            #        del self.series[j][index]
+            #        del_num = del_num + 1
+            #        continue
+            #    if num1 == num2:
+            #        del self.series[j][index+1]
+            #        del_num = del_num + 1
+            #        continue 
+            #    index = index +1
+	    #pdb.set_trace()
             flag = False
             for i in range(0, len(self.series[j])-1):
                 ts_1 = int(self.series[j][i+1][0])
@@ -167,13 +196,14 @@ class Record:
                     result.append(count/float(estimate))
         return result
 
-def estimate_day(tname):
+def estimate_day(tname, estimate_tname):
     global output
     print 'Estimating data of a date ....'
-    domains = getDomains(tname)
-    domains.append('google.com')
-    domains.append('youtube.com')
-    domains.append('facebook.com')
+    #domains = getDomains(tname)
+    #domains.append('google.com')
+    #domains.append('facebook.com')
+    #domains.append('youtube.com')
+    domains = getDomainsFromDB(estimate_tname, 100)
     print 'Get all distinct domain ....'
     domain_rates = {}
     for domain in domains:
@@ -190,18 +220,31 @@ def estimate_day(tname):
             print 'Roselver : %s\t Rate : %f\n' %(resolvers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
         string = ''
+        global_rate = 0.0
         for i in range(0, len(query_rate)):
-            print "writing to file..."
             if query_rate[i] > 0 and flag == False:
+                print 'writing to file...'
                 string += domain
                 flag = True
             if query_rate[i] > 0:
                 string += '\t'+resolvers[i]+','+str(query_rate[i])
+                global_rate = global_rate + query_rate[i]
 	string += '\n'
         if flag == True:
             output.write(string)
-                
-            
+
+            try:
+                cur.execute('SELECT count from %s where domain =\'%s\';)'%(estimate_tname, domain))
+            except pg.DatabaseError, e:
+                Log.error('%s : %s : %s' %(estimate_tname, domain, e.pgerror))
+            count = cur.fetchone()
+            estimate_vol = global_rate * 24 * 3600
+            distance = abs(estimate_vol - count)
+
+            try:
+                cur.execute('UPDATE %s SET rate = %f, estimate_vol = %f, distance = %f where domain = \'%s\';' %(estimate_tname, global_rate, estimate_vol, distance, domain))
+            except pg.DatabaseError, e:
+                Log.error('%s : %s' %(estimate_table, e))
     rates = domain_rates.items()
     return rates
 
@@ -209,8 +252,10 @@ def estimate_day(tname):
 def main():
     data_to_process = '20131001'
     dns_tname = 'dns_'+data_to_process
+    estimate_tname = 'estimate_' + data_to_process
+    #dns_tname = 'dns_test'
     output.write("#The estimated date is : %s\n" % data_to_process)
-    rates = estimate_day(dns_tname)
+    rates = estimate_day(dns_tname, estimate_tname)
     #output = open('query_rate_by_day.data', 'w')
     #for domain, query_rate in rates:
     #    if query_rate > 0 :
