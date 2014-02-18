@@ -118,7 +118,9 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             ts_0 = float(str(request['ts']))
             ts_1 = float(str(query['ts']))
             ttl = float(str(query['ttls']))
-            if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
+            if ts_0 < ts_1:
+                continue
+            if ts_0 > ts_1 and ts_0 <= (ts_1+ttl):
             #if request['ts'] > query['ts'] and request['ts'] <= (query['ts']+query['ttls']):
                 count = count + 1
             else:
