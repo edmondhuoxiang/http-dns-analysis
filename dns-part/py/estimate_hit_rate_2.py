@@ -156,12 +156,14 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
         count.append(0.0)
         dns_queries.append([])
     try: 
+        print 'Selecting records from db...'
         cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, tw[0], tw[1]))
         tmp = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
         exit(1)
 
+    print 'filtering into differenct queue'
     for entry in tmp:
         for i in range(0, len(resolvers)):
             #print str(entry['orig_h'])
@@ -172,6 +174,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
 
     #print dns_queries
     #pdb.set_trace()
+    print 'Deleting duplicate dns quries'
     while i < len(dns_queries):
         j = 0
         while j < (len(dns_queries[i]) - 1):
@@ -182,6 +185,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
             j = j + 1
         i = i + 1
     
+    print 'Making pairs of dns queries and http requests'
     for request in http_requests:
         tmp_index = []
         for i in range(0, len(resolvers)):
