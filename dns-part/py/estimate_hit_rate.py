@@ -29,10 +29,12 @@ except pg.DatabaseError, e:
     exit(1)
 
 def getDomains(tname):
+    data_to_process = tname[-8:]
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     domains = []
     global cur
     try:
-        cur.execute('SELECT DISTINCT query FROM %s WHERE rcode != \'-\' AND ttls >= 0 GROUP BY query HAVING COUNT(*) > 10 LIMIT 500;' % tname)
+        cur.execute('SELECT DISTINCT query FROM %s WHERE rcode != \'-\' AND ttls >= 0 AND ts > %s AND ts < %s GROUP BY query HAVING COUNT(*) > 10 LIMIT 500;' % (tname, tw[0], tw[1]))
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -43,13 +45,16 @@ def getDomains(tname):
     return results
 
 def getResolversForDomain(domain, tname, flag):
+    print flag
     if flag == True:
         print 'Static model to get resolvers'
         return ['129.174.18.18', '129.174.253.66', '129.174.67.98','199.26.254.212']
     resolvers = []
+    data_to_process = tname[-8:]
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT DISTINCT orig_h FROM %s WHERE query = \'%s\';' %(tname, domain))
+        cur.execute('SELECT DISTINCT orig_h FROM %s WHERE query = \'%s\' AND ts > %s AND ts < %s;' %(tname, domain, tw[0], tw[1]))
         resolvers = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -62,9 +67,11 @@ def getResolversForDomain(domain, tname, flag):
 
 def getNumOfCircle(domain, resolver, tname):
     num = 0
+    data_to_process = tname[-8:]
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT COUNT(*) FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND rcode != \'-\' AND ttls >= 0;' %(tname, domain, resolver))
+        cur.execute('SELECT COUNT(*) FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND rcode != \'-\' AND ttls >= 0 AND ts > %s AND ts < %s;' %(tname, domain, resolver, tw[0], tw[1]))
         num = fetchone()
     except pg.DatabaseError, e:
         Log.error('%s : %s' % (tname, e))
@@ -75,15 +82,17 @@ def getNumOfCircle(domain, resolver, tname):
 def getAllCircles(domain, resolver, dns_tname, http_tname):
     dns_queries = []
     http_requests = []
+    data_to_process = dns_tname[-8:]
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' %(dns_tname, domain, resolver))
+        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' %(dns_tname, domain, resolver, tw[0], tw[1]))
         dns_queries = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s : %s' %(dns_tname, domain, resolver, e))
         exit(1)
     try:
-        cur.execute('SELECT * FROM %s WHERE host = \'%s\' ORDER BY ts ASC;' %(http_tname, domain))
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' %(http_tname, domain, tw[0], tw[1]))
         http_requests = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_tname, domain, e))
@@ -111,9 +120,11 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
 def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     dns_queries = []
     http_requests = []
+    data_to_process = dns_tname[-8:]
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE host = \'%s\' ORDER BY ts ASC;' % (http_name, domain))
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (http_name, domain, tw[0], tw[1]))
         http_requests = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_tname, domain, e))
@@ -121,7 +132,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
 
     for resolver in resolvers:
         try:
-            cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' % (dns_tname, domain, resolver))
+            cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, resolver, tw[0], tw[1]))
             tmp = cur.fetchall()
         except pg.DatabaseError, e:
             Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
@@ -181,7 +192,10 @@ def getRateOfHits(circles):
         for circle in circles:
             if circle[2] == n:
                 count = count + 1
-        rate = rate + n*(float(count)/float(length))
+        if length != 0:
+            rate = rate + n*(float(count)/float(length))
+        else:
+            rate = rate + 0
     return rate
 
 def getAllRates(domain, dns_tname, http_tname):
@@ -206,6 +220,15 @@ def getAllRates(domain, dns_tname, http_tname):
     #    res.append((domain, resolvers[i], rate))
     return res
 
+def getTimeWindowOfDay(date, tz):
+    timezone = pytz.timezone(tz)
+    begin = date + ' 0:0:0'
+    end = date + ' 23:59:59'
+    date_begin = datetime.strptime(begin, "%Y%m%d %H:%M:%S")
+    date_end = datetime.strptime(end, "%Y%m%d %H:%M:%S")
+    date_begin_localized = timezone.localize(date_begin, is_dst=None)
+    date_end_localized = timezone.localize(date_end, is_dst=None)
+    return [time.mktime(date_begin_localized.timetuple()), time.mktime(date_end_localized.timetuple())]
 
 def main():
     data_to_process = '20131001'
