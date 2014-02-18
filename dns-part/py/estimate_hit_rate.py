@@ -189,10 +189,10 @@ def main():
         Log.error('Creating new table %s failed: %s' % (estimate_table, e.pgerror))
         sys.exit(1)
 
-    domains = getDomains(dns_table)
+    domains = getDomains(dns_tname)
     for domain in domains:
         print 'Processing domain : %s\n' % domain
-        res = getAllRates(domain, dns_table, http_table)
+        res = getAllRates(domain, dns_tname, http_tname)
         for entry in res:
             print '\tResovler : %s\tRate : %f\n' %(entry[1], entry[2])
             insert = '''INSERT INTO %s VALUES
