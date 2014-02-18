@@ -118,8 +118,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
                 break
     i = 0
     while i < len(circles)-1:
-        current_ts = circles[i][0]
-        dist = circles[i][0] - circles[i+1][0]
+        dist = circles[i+1][0] - circles[i][0]
         if dist < 1:
             del(circles[i+1])
         else:
