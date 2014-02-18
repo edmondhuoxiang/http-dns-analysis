@@ -95,7 +95,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             ts_0 = float(str(request['ts']))
             ts_1 = float(str(query['ts']))
             ttl = float(str(query['ttls']))
-            if ts_0 > ts_1 and ts_0 < (ts_1+ttls):
+            if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
             #if request['ts'] > query['ts'] and request['ts'] <= (query['ts']+query['ttls']):
                 count = count + 1
             else:
@@ -207,12 +207,13 @@ def main():
     (domain character varying(256), resolver inet, rate numeric);'''
     estimate_table = 'estimate_rate_' + data_to_process
     try: 
+        print 'Creating table %s' % estimate_table
         cur.execute('DROP TABLE IF EXISTS %s;' % estimate_table)
         cur.execute(create_new_table % estimate_table)
     except pg.DatabaseError, e:
         Log.error('Creating new table %s failed: %s' % (estimate_table, e.pgerror))
         sys.exit(1)
-
+    print 'Done'
     print 'Getting all domains in %s' % dns_tname
     domains = getDomains(dns_tname)
     print 'Done'
