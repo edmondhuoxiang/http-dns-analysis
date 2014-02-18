@@ -150,11 +150,13 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     circles = []
     index = []
     count = []
+    tmp_index = []
     for i in range(0, len(resolvers)):
         circles.append([])
         index.append(0)
         count.append(0.0)
         dns_queries.append([])
+        tmp_index.append(0)
     try: 
         print 'Selecting records from db...'
         cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, tw[0], tw[1]))
@@ -189,7 +191,8 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     #pdb.set_trace()
     print 'Making pairs of dns queries and http requests'
     for request in http_requests:
-        tmp_index = []
+        for k in tmp_index:
+            k = 0
         ts_0 = float(str(request['ts']))
         for i in range(0, len(resolvers)):
             if index[i] < len(dns_queries[i]):
@@ -198,16 +201,15 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
                 if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
                 #if request['ts'] > http_requests[i][index[i]]['ts'] and request['ts'] < (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
                     if ts_0 - ts_1 < 1.0:
-                        tmp_index = []
                         for j in range(0, len(resolvers)):
                             if j == i:
-                                tmp_index.append(1)
+                                tmp_index[j] = 1
                             else:
-                                tmp_index.append(0)
+                                tmp_index[j] = 0
                         break
-                    tmp_index.append(1);
+                    tmp_index[i] = 1
                 else:
-                    tmp_index.append(0);
+                    tmp_index[i] = 0;
                     if ts_0 > (ts_1+ttl):
                     #if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
                         circles[i].append(ts_1, ts_1+ttl, count[i])
@@ -215,10 +217,11 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
                         count[i] = 0.0
                         index[i] = index[i] + 1
             else:
-                tmp_index.append(0)
+                tmp_index[i] = 0
+        tmp_sum = sum(tmp_index)
         for i in range(0, len(tmp_index)):
-            if sum(tmp_index)!=0:
-                count[i] = count[i] + tmp_index[i]/sum(tmp_index)
+            if tmp_sum != 0:
+                count[i] = count[i] + tmp_index[i]/tmp_sum
     print count
     for i in range(0, len(resolvers)):
         if index[i] < len(dns_queries[i]):
@@ -245,7 +248,7 @@ def getRateOfHits(circles):
     maxhits = getMaxhits(circles)
     length = len(circles)
     rate = 0.0
-    for n in range(0, maxhits+1):
+    for n in range(0, int(maxhits)+1):
         count = 0
         for circle in circles:
             if circle[2] == n:
