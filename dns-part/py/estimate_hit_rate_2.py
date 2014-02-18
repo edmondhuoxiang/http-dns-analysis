@@ -163,23 +163,24 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
         exit(1)
 
     for entry in tmp:
-        print entry
-        print '*******'
         for i in range(0, len(resolvers)):
-            print str(entry['orig_h'])
+            #print str(entry['orig_h'])
             if resolvers[i] == str(entry['orig_h']):
                 dns_queries[i].append(entry)
 
     i = 0
-    print dns_queries
-    pdb.set_trace()
-    while i < len(dns_queries)-1:
-        print dns_queries[i][0]
-        dist = float(str(dns_queries[i+1][0][1])) - float(str(dns_queries[i][0][1]))
+
+    #print dns_queries
+    #pdb.set_trace()
+    while i < len(dns_queries):
+        j = 0
+        while j < (len(dns_queries[i]) - 1):
+            dist = float(str(dns_queries[i][j+1][1])) - float(str(dns_queries[i][j][1]))
         if dist < 1:
-            del(dns_queries[i])
+            del(dns_queries[i][j+1])
         else:
-            i = i + 1
+            j = j + 1
+        i = i + 1
     
     for request in http_requests:
         tmp_index = []
