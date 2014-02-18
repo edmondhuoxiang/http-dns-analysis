@@ -74,13 +74,13 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
     http_requests = []
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts asc;' %(dns_tname, domain, resovler))
+        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' %(dns_tname, domain, resovler))
         dns_queries = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s : %s' %(dns_tname, domain, resolver, e))
         exit(1)
     try:
-        cur.execute('SELECT * FROM %s WHERE host = \'%s\' ORDER BY ts asc;' %(http_tname, domain))
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' ORDER BY ts ASC;' %(http_tname, domain))
         http_requests = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_tname, domain, e))
@@ -97,6 +97,49 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             else:
                 circles.append((query['ts'], query['ts']+query['ttls'], count))
                 break
+    return circles
+
+def getAllCircles_v2(domain, resovlers, dns_tname, http_tname):
+    dns_queries = []
+    http_requests = []
+    global cur
+    try:
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' ORDER BY ts ASC;' % (http_name, domain))
+        http_requests = cur.fetchall()
+    except pg.DatabaseError, e:
+        Log.error('%s : %s : %s' % (http_tname, domain, e))
+        exit(1)
+
+    for resolver in resolvers:
+        try:
+            cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' % (dns_tname, domain, resolver))
+            tmp = cur.fetchall()
+        except pg.DatabaseError, e:
+            Log.error('%s : %s : %s : %s' % (dns_tname, domain, resovler, e))
+            exit(1)
+        dns_queries.append(tmp)
+    
+    circles = []
+    index = []
+    count = []
+    for i in range(0, len(resovlers)):
+        circles.append([])
+        index.append(0)
+        count.append(0.0)
+    
+    for request in http_requests:
+        tmp_index = []
+        for i in range(0, len(resolvers)):
+            if request['ts'] > http_requests[i][index[i]]['ts'] and request['ts'] < (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                tmp_index.append(1);
+            else:
+                tmp_index.append(0);
+                if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                    circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
+                    count[i] = 0.0
+        for i in range(0, tmp_index):
+            count[i] = count[i] + tmp_index[i]/sum(tmp_index)
+
     return circles
 
 def getMaxhits(circles):
@@ -125,6 +168,10 @@ def getAllRates(domain, dns_tname, http_tname):
         circles = getAllCircles(domain, resolver, dns_tname, http_tname)
         rate = getRateOfHits(circles)
         res.append(domain, resolver, rate)
+    #circles = getAllCircles_v2(domain, resovlers, dns_tname, http_tname)
+    #for i in range(0,resolvers):
+    #    rate = getRateOfHits(circles[i])
+    #    res.append(domain, resolvers[i], rate)
     return res
 
 
