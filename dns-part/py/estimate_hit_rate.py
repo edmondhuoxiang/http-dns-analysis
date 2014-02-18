@@ -116,7 +116,18 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
                 #circles.append((query['ts'], query['ts']+query['ttls'], count)
                 circles.append((ts_1, ts_1+ttl, count))
                 break
+    del_num = 0
+    i = 0
+    while i < len(circles)-1-del_num:
+        current_ts = circles[i][0]
+        dist = circles[i][0] - circles[i+1][0]
+        if dist < 1:
+            del(circles[i+1])
+            del_num = del_num+1
+        else:
+            i = i + 1
     print 'circles: %s' % circles
+    
     return circles
 
 def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
@@ -258,7 +269,7 @@ def main():
             insert = '''INSERT INTO %s VALUES
             (%s, %s, %f);'''
             try:
-                cur.execute(insert %(estimat_table, res[0], res[1], res[2]))
+                cur.execute(insert %(estimate_table, res[0], res[1], res[2]))
             except pg.DatabaseError, e:
                 Log.error(e.pgerror)
                 sys.exit(1)
