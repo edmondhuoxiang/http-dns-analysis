@@ -214,9 +214,12 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
                         #circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
                         count[i] = 0.0
                         index[i] = index[i] + 1
+            else:
+                tmp_index.append(0)
         for i in range(0, len(tmp_index)):
             if sum(tmp_index)!=0:
                 count[i] = count[i] + tmp_index[i]/sum(tmp_index)
+    print count
     for i in range(0, len(resolvers)):
         if index[i] < len(dns_queries[i]):
             ts_1 = float(str(dns_queries[i][index[i]]['ts']))
