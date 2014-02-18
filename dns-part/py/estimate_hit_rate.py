@@ -222,7 +222,8 @@ def getAllRates(domain, dns_tname, http_tname):
         print 'Calculating rate' 
         rate = getRateOfHits(circles)
         print 'Done'
-        res.append((domain, resolver, rate))
+        for r in rate:
+            res.append((domain, resolver, r))
     #print 'Getting circles for all resolvers'
     #circles = getAllCircles_v2(domain, resolvers, dns_tname, http_tname)
     #print 'Done'
@@ -269,7 +270,7 @@ def main():
             insert = '''INSERT INTO %s VALUES
             (%s, %s, %f);'''
             try:
-                cur.execute(insert %(estimate_table, res[0], res[1], res[2]))
+                cur.execute(insert %(estimate_table, entry[0], entry[1], entry[2]))
             except pg.DatabaseError, e:
                 Log.error(e.pgerror)
                 sys.exit(1)
