@@ -153,7 +153,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     for i in range(0, len(resolvers)):
         circles.append([])
         index.append(0)
-        count.apeend(0.0)
+        count.append(0.0)
         dns_queries.append([])
     try: 
         cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, tw[0], tw[1]))
