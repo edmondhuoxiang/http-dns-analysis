@@ -30,13 +30,13 @@ except pg.DatabaseError, e:
     Log.error(e.pgerror)
     exit(1)
 
-def getDomains(tname):
+def getDomains(tname, http_tname):
     data_to_process = tname[-8:]
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     domains = []
     global cur
     try:
-        cur.execute('SELECT DISTINCT query FROM %s WHERE rcode != \'-\' AND ttls >= 0 AND ts > %s AND ts < %s GROUP BY query HAVING COUNT(*) > 10 LIMIT 500;' % (tname, tw[0], tw[1]))
+        cur.execute('SELECT DISTINCT host FROM %s WHERE ts > %s AND ts < %s GROUP BY host HAVING COUNT(*) > 10 LIMIT 600;' % (http_tname, tw[0], tw[1]))
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -141,7 +141,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (http_name, domain, tw[0], tw[1]))
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (http_tname, domain, tw[0], tw[1]))
         http_requests = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_tname, domain, e))
@@ -154,6 +154,13 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
         except pg.DatabaseError, e:
             Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
             exit(1)
+        i = 0
+        while i < len(tmp)-1:
+            dist = float(str(tmp[i+1]['ts'])) - float(str(tmp[i]['ts']))
+            if dist < 1:
+                del(tmp[i])
+            else:
+                i = i + 1
         dns_queries.append(tmp)
     
     circles = []
@@ -265,7 +272,7 @@ def main():
         sys.exit(1)
     print 'Done'
     print 'Getting all domains in %s' % dns_tname
-    domains = getDomains(dns_tname)
+    domains = getDomains(dns_tname, http_tname)
     print 'Done'
     for domain in domains:
         print 'Processing domain : %s' % domain
