@@ -218,9 +218,10 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
             if sum(tmp_index)!=0:
                 count[i] = count[i] + tmp_index[i]/sum(tmp_index)
     for i in range(0, len(resolvers)):
-        ts_1 = float(str(dns_queries[i][index[i]]['ts']))
-        ttl = float(str(dns_queries[i][index[i]]['ttls']))
-        circles[i].append((ts_1, ts_1+ttl, count[i]))
+        if index[i] < len(dns_queries[i]):
+            ts_1 = float(str(dns_queries[i][index[i]]['ts']))
+            ttl = float(str(dns_queries[i][index[i]]['ttls']))
+            circles[i].append((ts_1, ts_1+ttl, count[i]))
 
     print circles
     return circles
