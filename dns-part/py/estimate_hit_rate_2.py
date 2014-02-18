@@ -141,7 +141,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (http_name, domain, tw[0], tw[1]))
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (http_tname, domain, tw[0], tw[1]))
         http_requests = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_tname, domain, e))
