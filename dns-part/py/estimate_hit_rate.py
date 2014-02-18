@@ -152,8 +152,8 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
             else:
                 tmp_index.append(0);
                 if ts_0 > (ts_1+ttl):
-                    circles[i].append(ts_1, ts_1+ttl, count[i]
                 #if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                    circles[i].append(ts_1, ts_1+ttl, count[i])
                     #circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
                     count[i] = 0.0
         for i in range(0, tmp_index):
