@@ -173,7 +173,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     i = 0
 
     #print dns_queries
-    pdb.set_trace()
+    #pdb.set_trace()
     print 'Deleting duplicate dns quries'
     while i < len(dns_queries):
         j = 0
@@ -189,28 +189,30 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     print 'Making pairs of dns queries and http requests'
     for request in http_requests:
         tmp_index = []
+        ts_0 = float(str(request['ts']))
         for i in range(0, len(resolvers)):
-            ts_0 = float(str(request['ts']))
-            ts_1 = float(str(dns_queries[i][index[i]]['ts']))
-            ttl = float(str(dns_queries[i][index[i]]['ttls']))
-            if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
-            #if request['ts'] > http_requests[i][index[i]]['ts'] and request['ts'] < (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
-                if ts_0 - ts_1 < 1.0:
-                    tmp_index = []
-                    for j in range(0, len(resolvers)):
-                        if j == i:
-                            tmp_index.append(1)
-                        else:
-                            tmp_index.append(0)
-                    break
-                tmp_index.append(1);
-            else:
-                tmp_index.append(0);
-                if ts_0 > (ts_1+ttl):
-                #if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
-                    circles[i].append(ts_1, ts_1+ttl, count[i])
-                    #circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
-                    count[i] = 0.0
+            while index[i] < len(dns_queries[i]):
+                ts_1 = float(str(dns_queries[i][index[i]]['ts']))
+                ttl = float(str(dns_queries[i][index[i]]['ttls']))
+                if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
+                #if request['ts'] > http_requests[i][index[i]]['ts'] and request['ts'] < (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                    if ts_0 - ts_1 < 1.0:
+                        tmp_index = []
+                        for j in range(0, len(resolvers)):
+                            if j == i:
+                                tmp_index.append(1)
+                            else:
+                                tmp_index.append(0)
+                        break
+                    tmp_index.append(1);
+                else:
+                    tmp_index.append(0);
+                    if ts_0 > (ts_1+ttl):
+                    #if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                        circles[i].append(ts_1, ts_1+ttl, count[i])
+                        #circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
+                        count[i] = 0.0
+                        index[i] = index[i] + 1
         for i in range(0, tmp_index):
             count[i] = count[i] + tmp_index[i]/sum(tmp_index)
 
