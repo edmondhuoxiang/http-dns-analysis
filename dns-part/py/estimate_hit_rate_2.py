@@ -172,6 +172,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
 
     i = 0
     print dns_queries
+    pdb.set_trace()
     while i < len(dns_queries)-1:
         print dns_queries[i][0]
         dist = float(str(dns_queries[i+1][0][1])) - float(str(dns_queries[i][0][1]))
