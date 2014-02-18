@@ -191,7 +191,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
         tmp_index = []
         ts_0 = float(str(request['ts']))
         for i in range(0, len(resolvers)):
-            while index[i] < len(dns_queries[i]):
+            if index[i] < len(dns_queries[i]):
                 ts_1 = float(str(dns_queries[i][index[i]]['ts']))
                 ttl = float(str(dns_queries[i][index[i]]['ttls']))
                 if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
