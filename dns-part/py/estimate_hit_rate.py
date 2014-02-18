@@ -191,11 +191,11 @@ def getAllRates(domain, dns_tname, http_tname):
         print 'Calculating rate' 
         rate = getRateOfHits(circles)
         print 'Done'
-        res.append(domain, resolver, rate)
+        res.append((domain, resolver, rate))
     #circles = getAllCircles_v2(domain, resolvers, dns_tname, http_tname)
     #for i in range(0,resolvers):
     #    rate = getRateOfHits(circles[i])
-    #    res.append(domain, resolvers[i], rate)
+    #    res.append((domain, resolvers[i], rate))
     return res
 
 
