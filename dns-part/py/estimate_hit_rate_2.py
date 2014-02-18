@@ -170,8 +170,8 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
 
     i = 0
     while i < len(dns_queries)-1:
-        print dns_queries[i]['ts']
-        dist = float(str(dns_queries[i+1]['ts'])) - float(str(dns_queries[i]['ts']))
+        print dns_queries[i]
+        dist = float(str(dns_queries[i+1][1])) - float(str(dns_queries[i][1]))
         if dist < 1:
             del(dns_queries[i])
         else:
