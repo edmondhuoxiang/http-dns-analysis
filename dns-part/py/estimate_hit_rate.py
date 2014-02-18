@@ -242,8 +242,10 @@ def getTimeWindowOfDay(date, tz):
 
 def main():
     data_to_process = '20131001'
+    tw = getTimeWindowOfDay(data_to_process)
     dns_tname = 'dns_' + data_to_process
     http_tname = 'log_' + data_to_process + '_rawts'
+    print 'tw : %s' % tw
     create_new_table = '''CREATE TABLE %s
     (domain character varying(256), resolver inet, rate numeric);'''
     estimate_table = 'estimate_rate_' + data_to_process
