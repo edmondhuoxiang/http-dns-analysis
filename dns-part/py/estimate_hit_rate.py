@@ -73,7 +73,7 @@ def getNumOfCircle(domain, resolver, tname):
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT COUNT(*) FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND rcode != \'-\' AND ttls >= 0 AND ts > %s AND ts < %s;' %(tname, domain, resolver, tw[0], tw[1]))
+        cur.execute('SELECT COUNT(*) FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND rcode != \'-\' AND ttls >= 0 AND ts > %s AND ts < %s AND ttls > 0;' %(tname, domain, resolver, tw[0], tw[1]))
         num = fetchone()
     except pg.DatabaseError, e:
         Log.error('%s : %s' % (tname, e))
@@ -88,7 +88,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' %(dns_tname, domain, resolver, tw[0], tw[1]))
+        cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' %(dns_tname, domain, resolver, tw[0], tw[1]))
         dns_queries = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s : %s' %(dns_tname, domain, resolver, e))
@@ -149,7 +149,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
 
     for resolver in resolvers:
         try:
-            cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, resolver, tw[0], tw[1]))
+            cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, resolver, tw[0], tw[1]))
             tmp = cur.fetchall()
         except pg.DatabaseError, e:
             Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
