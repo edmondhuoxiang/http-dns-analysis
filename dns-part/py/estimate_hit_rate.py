@@ -128,7 +128,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
                 #circles.append((query['ts'], query['ts']+query['ttls'], count)
                 #circles.append((ts_1, ts_1+ttl, count))
                 break
-        circle.append((ts_1, ts_1+ttl, count))
+        circles.append((ts_1, ts_1+ttl, count))
     #pdb.set_trace()
     print 'circles: %s' % circles
     
