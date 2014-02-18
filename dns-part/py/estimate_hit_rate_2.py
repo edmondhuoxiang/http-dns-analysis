@@ -213,7 +213,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
                         #circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
                         count[i] = 0.0
                         index[i] = index[i] + 1
-        for i in range(0, tmp_index):
+        for i in range(0, len(tmp_index)):
             count[i] = count[i] + tmp_index[i]/sum(tmp_index)
 
     return circles
