@@ -157,7 +157,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
         dns_queries.append([])
     try: 
         cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, tw[0], tw[1]))
-        tmp = cur.fectchall()
+        tmp = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
         exit(1)
