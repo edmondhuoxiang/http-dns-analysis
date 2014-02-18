@@ -42,7 +42,10 @@ def getDomains(tname):
         results.append(str(domain)[2:-2])
     return results
 
-def getResolversForDomain(domain, tname):
+def getResolversForDomain(domain, tname, flag):
+    if flag == True:
+        print 'Static model to get resolvers'
+        return ['129.174.18.18', '129.174.253.66', '129.174.67.98','199.26.254.212']
     resolvers = []
     global cur
     try:
@@ -99,9 +102,10 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             #if request['ts'] > query['ts'] and request['ts'] <= (query['ts']+query['ttls']):
                 count = count + 1
             else:
-                #circles.append((query['ts'], query['ts']+query['ttls'], count))
+                #circles.append((query['ts'], query['ts']+query['ttls'], count)
                 circles.append((ts_1, ts_1+ttl, count))
                 break
+    print 'circles: %s' % circles
     return circles
 
 def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
@@ -225,7 +229,7 @@ def main():
             insert = '''INSERT INTO %s VALUES
             (%s, %s, %f);'''
             try:
-                cur.execute(insert %(res[0], res[1], res[2]))
+                cur.execute(insert %(estimat_table, res[0], res[1], res[2]))
             except pg.DatabaseError, e:
                 Log.error(e.pgerror)
                 sys.exit(1)
