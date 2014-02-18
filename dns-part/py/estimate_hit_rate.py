@@ -116,14 +116,12 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
                 #circles.append((query['ts'], query['ts']+query['ttls'], count)
                 circles.append((ts_1, ts_1+ttl, count))
                 break
-    del_num = 0
     i = 0
-    while i < len(circles)-1-del_num:
+    while i < len(circles)-1:
         current_ts = circles[i][0]
         dist = circles[i][0] - circles[i+1][0]
         if dist < 1:
             del(circles[i+1])
-            del_num = del_num+1
         else:
             i = i + 1
     print 'circles: %s' % circles
@@ -222,8 +220,7 @@ def getAllRates(domain, dns_tname, http_tname):
         print 'Calculating rate' 
         rate = getRateOfHits(circles)
         print 'Done'
-        for r in rate:
-            res.append((domain, resolver, r))
+        res.append((domain, resolver, rate))
     #print 'Getting circles for all resolvers'
     #circles = getAllCircles_v2(domain, resolvers, dns_tname, http_tname)
     #print 'Done'
