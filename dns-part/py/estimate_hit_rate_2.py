@@ -146,22 +146,6 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_tname, domain, e))
         exit(1)
-
-    for resolver in resolvers:
-        try:
-            cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND orig_h = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, resolver, tw[0], tw[1]))
-            tmp = cur.fetchall()
-        except pg.DatabaseError, e:
-            Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
-            exit(1)
-        i = 0
-        while i < len(tmp)-1:
-            dist = float(str(tmp[i+1]['ts'])) - float(str(tmp[i]['ts']))
-            if dist < 1:
-                del(tmp[i])
-            else:
-                i = i + 1
-        dns_queries.append(tmp)
     
     circles = []
     index = []
@@ -169,7 +153,28 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     for i in range(0, len(resolvers)):
         circles.append([])
         index.append(0)
-        count.append(0.0)
+        count.apeend(0.0)
+        dns_queries.append([])
+    try: 
+        cur.execute('SELECT * FROM %s WHERE ttls > 0 AND rcode != \'-\' AND query = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (dns_tname, domain, tw[0], tw[1]))
+        tmp = cur.fectchall()
+    except pg.DatabaseError, e:
+        Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
+        exit(1)
+
+    for entry in tmp:
+        for i in range(0, len(resolvers)):
+            print str(entry['orig_h'])
+            if resolvers[i] == str(entry['orig_h']):
+                dns_queries[i].append(entry)
+
+    i = 0
+    while i < len(dns_queries)-1:
+        dist = float(str(dns_queries[i+1]['ts'])) - float(str(dns_queries[i]['ts']))
+        if dist < 1:
+            del(dns_queries[i])
+        else:
+            i = i + 1
     
     for request in http_requests:
         tmp_index = []
