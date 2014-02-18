@@ -227,13 +227,13 @@ def getAllRates(domain, dns_tname, http_tname):
     resolvers = getResolversForDomain(domain, dns_tname, True)
     print 'Done'
     res = []
-    for resolver in resolvers:
-        print 'Getting circles for resolver: %s' % resolver
-        circles = getAllCircles(domain, resolver, dns_tname, http_tname)
-        print 'Calculating rate' 
-        rate = getRateOfHits(circles)
-        print 'Done'
-        res.append((domain, resolver, rate))
+    #for resolver in resolvers:
+    #    print 'Getting circles for resolver: %s' % resolver
+    #    circles = getAllCircles(domain, resolver, dns_tname, http_tname)
+    ##    print 'Calculating rate' 
+    #    rate = getRateOfHits(circles)
+    #    print 'Done'
+    #    res.append((domain, resolver, rate))
     print 'Getting circles for all resolvers'
     circles = getAllCircles_v2(domain, resolvers, dns_tname, http_tname)
     print 'Done'
