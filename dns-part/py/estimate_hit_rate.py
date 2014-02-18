@@ -74,7 +74,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
     http_requests = []
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' %(dns_tname, domain, resovler))
+        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' %(dns_tname, domain, resolver))
         dns_queries = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s : %s' %(dns_tname, domain, resolver, e))
@@ -99,7 +99,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
                 break
     return circles
 
-def getAllCircles_v2(domain, resovlers, dns_tname, http_tname):
+def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     dns_queries = []
     http_requests = []
     global cur
@@ -115,14 +115,14 @@ def getAllCircles_v2(domain, resovlers, dns_tname, http_tname):
             cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND orig_h = \'%s\' ORDER BY ts ASC;' % (dns_tname, domain, resolver))
             tmp = cur.fetchall()
         except pg.DatabaseError, e:
-            Log.error('%s : %s : %s : %s' % (dns_tname, domain, resovler, e))
+            Log.error('%s : %s : %s : %s' % (dns_tname, domain, resolver, e))
             exit(1)
         dns_queries.append(tmp)
     
     circles = []
     index = []
     count = []
-    for i in range(0, len(resovlers)):
+    for i in range(0, len(resolvers)):
         circles.append([])
         index.append(0)
         count.append(0.0)
@@ -168,7 +168,7 @@ def getAllRates(domain, dns_tname, http_tname):
         circles = getAllCircles(domain, resolver, dns_tname, http_tname)
         rate = getRateOfHits(circles)
         res.append(domain, resolver, rate)
-    #circles = getAllCircles_v2(domain, resovlers, dns_tname, http_tname)
+    #circles = getAllCircles_v2(domain, resolvers, dns_tname, http_tname)
     #for i in range(0,resolvers):
     #    rate = getRateOfHits(circles[i])
     #    res.append(domain, resolvers[i], rate)
@@ -189,14 +189,14 @@ def main():
         Log.error('Creating new table %s failed: %s' % (estimate_table, e.pgerror))
         sys.exit(1)
 
-    print 'Getting all domains in %s\n' % dns_tname
+    print 'Getting all domains in %s' % dns_tname
     domains = getDomains(dns_tname)
     print 'Done'
     for domain in domains:
         print 'Processing domain : %s\n' % domain
         res = getAllRates(domain, dns_tname, http_tname)
         for entry in res:
-            print '\tResovler : %s\tRate : %f\n' %(entry[1], entry[2])
+            print '\tResolver : %s\tRate : %f\n' %(entry[1], entry[2])
             insert = '''INSERT INTO %s VALUES
             (%s, %s, %f);'''
             try:
