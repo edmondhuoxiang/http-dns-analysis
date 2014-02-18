@@ -124,6 +124,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             elif ts_0 <= ts_1:
                 continue
             else:
+                index = index -1
                 #circles.append((query['ts'], query['ts']+query['ttls'], count)
                 circles.append((ts_1, ts_1+ttl, count))
                 break
