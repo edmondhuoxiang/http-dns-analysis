@@ -216,6 +216,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
         for i in range(0, len(tmp_index)):
             count[i] = count[i] + tmp_index[i]/sum(tmp_index)
 
+    print circles
     return circles
 
 def getMaxhits(circles):
