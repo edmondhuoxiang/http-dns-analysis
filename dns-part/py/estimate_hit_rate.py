@@ -46,7 +46,7 @@ def getResolversForDomain(domain, tname):
     resolvers = []
     global cur
     try:
-        cur.execute('SELECT DISNTINCT orig_h FROM %s WHERE query = \'%s\';' %(tname, domain))
+        cur.execute('SELECT DISTINCT orig_h FROM %s WHERE query = \'%s\';' %(tname, domain))
         resolvers = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
