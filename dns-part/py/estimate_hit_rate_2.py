@@ -173,17 +173,17 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     i = 0
 
     #print dns_queries
-    #pdb.set_trace()
+    pdb.set_trace()
     print 'Deleting duplicate dns quries'
     while i < len(dns_queries):
         j = 0
         while j < (len(dns_queries[i]) - 1):
             print dns_queries
             dist = float(str(dns_queries[i][j+1][1])) - float(str(dns_queries[i][j][1]))
-        if dist < 1:
-            del(dns_queries[i][j+1])
-        else:
-            j = j + 1
+            if dist < 1:
+                del(dns_queries[i][j+1])
+            else:
+                j = j + 1
         i = i + 1
     
     print 'Making pairs of dns queries and http requests'
