@@ -66,7 +66,7 @@ def getNumOfCircle(domain, resolver, tname):
     except pg.DatabaseError, e:
         Log.error('%s : %s' % (tname, e))
         exit(1)
-    print 'The number of circles is: %s\n' % num
+    print 'The number of circles is: %s' % num
     return num
 
 def getAllCircles(domain, resolver, dns_tname, http_tname):
@@ -92,10 +92,15 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
         while index < len(http_requests):
             request = http_requests[index]
             index = index + 1
-            if request['ts'] > query['ts'] and request['ts'] <= (query['ts']+query['ttls']):
+            ts_0 = float(str(request['ts']))
+            ts_1 = float(str(query['ts']))
+            ttl = float(str(query['ttls']))
+            if ts_0 > ts_1 and ts_0 < (ts_1+ttls):
+            #if request['ts'] > query['ts'] and request['ts'] <= (query['ts']+query['ttls']):
                 count = count + 1
             else:
-                circles.append((query['ts'], query['ts']+query['ttls'], count))
+                #circles.append((query['ts'], query['ts']+query['ttls'], count))
+                circles.append((ts_1, ts_1+ttl, count))
                 break
     return circles
 
@@ -130,12 +135,26 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     for request in http_requests:
         tmp_index = []
         for i in range(0, len(resolvers)):
-            if request['ts'] > http_requests[i][index[i]]['ts'] and request['ts'] < (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+            ts_0 = float(str(request['ts']))
+            ts_1 = float(str(dns_queries[i][index[i]]['ts']))
+            ttl = float(str(dns_queries[i][index[i]]['ttls']))
+            if ts_0 > ts_1 and ts_0 < (ts_1+ttl):
+            #if request['ts'] > http_requests[i][index[i]]['ts'] and request['ts'] < (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                if ts_0 - ts_1 < 1.0:
+                    tmp_index = []
+                    for j in range(0, len(resolvers)):
+                        if j == i:
+                            tmp_index.append(1)
+                        else:
+                            tmp_index.append(0)
+                    break
                 tmp_index.append(1);
             else:
                 tmp_index.append(0);
-                if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
-                    circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
+                if ts_0 > (ts_1+ttl):
+                    circles[i].append(ts_1, ts_1+ttl, count[i]
+                #if request['ts'] > (http_requests[i][index[i]]['ts']+http_requests[i][index[i]]['ttls']):
+                    #circles[i].append(http_requests[i][index[i]]['ts'], htpp_requets[i][index[i]]['ts']+http_request[i][index[i]]['ttls'], count[i] )
                     count[i] = 0.0
         for i in range(0, tmp_index):
             count[i] = count[i] + tmp_index[i]/sum(tmp_index)
@@ -198,10 +217,10 @@ def main():
     domains = getDomains(dns_tname)
     print 'Done'
     for domain in domains:
-        print 'Processing domain : %s\n' % domain
+        print 'Processing domain : %s' % domain
         res = getAllRates(domain, dns_tname, http_tname)
         for entry in res:
-            print '\tResolver : %s\tRate : %f\n' %(entry[1], entry[2])
+            print '\tResolver : %s\tRate : %f' %(entry[1], entry[2])
             insert = '''INSERT INTO %s VALUES
             (%s, %s, %f);'''
             try:
