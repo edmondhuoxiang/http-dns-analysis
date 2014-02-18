@@ -17,7 +17,7 @@ import gzip
 import logging as Log
 import decimal
 import pytz
-
+import pdb
 con = None
 r = redis.StrictRedis(host='localhost', port=6379,db=0)
 Log.basicConfig(filename='./estimate_hit_rate.log',format='%(asctime)s %(message)s', level=Log.INFO)
@@ -101,6 +101,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
         exit(1)
     circles = []
     index = 0
+    pdb.set_trace()
     for query in dns_queries:
         count = 0
         while index < len(http_requests):
@@ -266,7 +267,7 @@ def main():
         for entry in res:
             print '\tResolver : %s\tRate : %f' %(entry[1], entry[2])
             insert = '''INSERT INTO %s VALUES
-            (\'%s\',\' %s\', %f);'''
+            (\'%s\',\'%s\', %f);'''
             try:
                 cur.execute(insert %(estimate_table, entry[0], entry[1], entry[2]))
             except pg.DatabaseError, e:
