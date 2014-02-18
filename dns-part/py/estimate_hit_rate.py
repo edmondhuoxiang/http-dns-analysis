@@ -243,7 +243,7 @@ def getTimeWindowOfDay(date, tz):
 
 def main():
     data_to_process = '20131001'
-    tw = getTimeWindowOfDay(data_to_process)
+    tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     dns_tname = 'dns_' + data_to_process
     http_tname = 'log_' + data_to_process + '_rawts'
     print 'tw : %s' % tw
