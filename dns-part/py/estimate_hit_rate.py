@@ -109,7 +109,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             del(dns_queries[i+1])
         else:
             i = i+1
-    pdb.set_trace()
+    #pdb.set_trace()
     for query in dns_queries:
         count = 0
         while index < len(http_requests):
