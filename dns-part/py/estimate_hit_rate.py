@@ -18,7 +18,7 @@ import logging as Log
 
 con = None
 r = redis.StrictRedis(host='localhost', port=6379,db=0)
-Log.basicConfig(filename='./estimate_query_rate.log',format='%(asctime)s %(message)s', level=Log.INFO)
+Log.basicConfig(filename='./estimate_hit_rate.log',format='%(asctime)s %(message)s', level=Log.INFO)
 
 try:
     con = pg.connect(database='tds', user='tds', host='localhost', password='9bBJPLr9')
@@ -162,7 +162,7 @@ def getRateOfHits(circles):
     return rate
 
 def getAllRates(domain, dns_tname, http_tname):
-    print 'Getting all resolvers for %d' % domain
+    print 'Getting all resolvers for %s' % domain
     resolvers = getResolversForDomain(domain, dns_tname)
     print 'Done'
     res = []
