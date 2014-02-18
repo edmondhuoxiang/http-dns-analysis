@@ -189,7 +189,9 @@ def main():
         Log.error('Creating new table %s failed: %s' % (estimate_table, e.pgerror))
         sys.exit(1)
 
+    print 'Getting all domains in %s\n' % dns_tname
     domains = getDomains(dns_tname)
+    print 'Done'
     for domain in domains:
         print 'Processing domain : %s\n' % domain
         res = getAllRates(domain, dns_tname, http_tname)
