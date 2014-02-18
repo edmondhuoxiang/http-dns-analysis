@@ -109,7 +109,7 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             del(dns_queries[i+1])
         else:
             i = i+1
-    #pdb.set_trace()
+    pdb.set_trace()
     for query in dns_queries:
         count = 0
         while index < len(http_requests):
@@ -118,15 +118,16 @@ def getAllCircles(domain, resolver, dns_tname, http_tname):
             ts_0 = float(str(request['ts']))
             ts_1 = float(str(query['ts']))
             ttl = float(str(query['ttls']))
-            if ts_0 < ts_1:
-                continue
             if ts_0 > ts_1 and ts_0 <= (ts_1+ttl):
             #if request['ts'] > query['ts'] and request['ts'] <= (query['ts']+query['ttls']):
                 count = count + 1
+            else if ts_0 < ts_1:
+                continue
             else:
                 #circles.append((query['ts'], query['ts']+query['ttls'], count)
                 circles.append((ts_1, ts_1+ttl, count))
                 break
+    pdb.set_trace()
     print 'circles: %s' % circles
     
     return circles
