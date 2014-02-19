@@ -191,8 +191,8 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
     #pdb.set_trace()
     print 'Making pairs of dns queries and http requests'
     for request in http_requests:
-        for k in tmp_index:
-            k = 0
+        for k in  range(0, len(tmp_index)):
+            tmp_index[k] = 0
         ts_0 = float(str(request['ts']))
         for i in range(0, len(resolvers)):
             if index[i] < len(dns_queries[i]):
@@ -218,10 +218,12 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
                         index[i] = index[i] + 1
             else:
                 tmp_index[i] = 0
-        tmp_sum = sum(tmp_index)
+        tmp_sum = 0.0
+        for k in range(0, len(tmp_index)):
+            tmp_sum = tmp_sum + k
         for i in range(0, len(tmp_index)):
             if tmp_sum != 0:
-                count[i] = count[i] + tmp_index[i]/tmp_sum
+                count[i] = count[i] + float(tmp_index[i])/float(tmp_sum)
     print count
     for i in range(0, len(resolvers)):
         if index[i] < len(dns_queries[i]):
