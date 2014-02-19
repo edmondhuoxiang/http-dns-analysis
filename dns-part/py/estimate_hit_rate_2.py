@@ -220,7 +220,7 @@ def getAllCircles_v2(domain, resolvers, dns_tname, http_tname):
                 tmp_index[i] = 0
         tmp_sum = 0.0
         for k in range(0, len(tmp_index)):
-            tmp_sum = tmp_sum + k
+            tmp_sum = tmp_sum + tmp_index[k]
         for i in range(0, len(tmp_index)):
             if tmp_sum != 0:
                 count[i] = count[i] + float(tmp_index[i])/float(tmp_sum)
