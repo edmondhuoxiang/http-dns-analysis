@@ -145,10 +145,10 @@ def main():
         count = getDNSQuery(domain, dns_tname)
         rate = getAverRate(domain, rate_tname, count)
         actual_req = getHTTPRequest(domain, http_tname)
-        estimated = dns_query * rate
         dns_query = 0
         for c in count:
             dns_query += count[c]
+        estimated = dns_query * rate
         try:
             cur.execute('INSERT INTO %s VALUES (\'%s\', %s, %s, %s, %s);' % (res_tname, domain, rate, dns_query, estimated, actual_req))
         except pg.DatabaseError, e:
