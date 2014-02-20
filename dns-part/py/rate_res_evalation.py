@@ -47,6 +47,7 @@ def getDomain(tname):
 def getAverRate(domain, tname):
     global cur
     rates = []
+    print tname
     try:
         cur.execute('SELECT DISTINCT rate FROM %s WHERE domain = \'%s\';', (tname, domain))
         rates = cur.fetchall()
