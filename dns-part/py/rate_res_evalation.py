@@ -90,7 +90,7 @@ def getDNSQuery(domain, tname):
 def getHTTPRequest(domain, tname):
     global cur
     count = 0
-    data_to_progress = tname[4:-6] 
+    data_to_process = tname[4:-6] 
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     try:
         cur.execute('SELECT count(*) FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (tname, domain, tw[0], tw[1]))
