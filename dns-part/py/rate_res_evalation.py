@@ -93,7 +93,7 @@ def getDNSQuery(domain, tname):
             tmp = count[query['orig_h']]
             tmp = tmp + 1
             count.update({query['orig_h']:tmp})
-        else
+        else:
             count.update({query['orig_h']:1})
     print count
     return count
