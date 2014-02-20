@@ -55,7 +55,7 @@ def getAverRate(domain, tname):
         exit(1)
     res = 0.0
     for rate in rates:
-        res += rate
+        res += float(str(rate[0]))
     if res != 0:
         count = 0
         for rate in rates:
