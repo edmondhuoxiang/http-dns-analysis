@@ -44,26 +44,28 @@ def getDomain(tname):
         results.append(str(domain)[2:-2])
     return results
 
-def getAverRate(domain, tname):
+def getResolvers():
+    return ['129.174.18.18','129.174.253.66','129.174.67.98','199.26.254.212']
+
+def getAverRate(domain, tname, resolvers):
     global cur
     rates = []
     try:
-        cur.execute('SELECT DISTINCT rate FROM %s WHERE domain = \'%s\';' % (tname, domain))
+        cur.execute('SELECT DISTINCT resolver, rate FROM %s WHERE domain = \'%s\';' % (tname, domain))
         rates = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' %(tname, domain , e))
         exit(1)
+    total = 0.0
+    for r in resolvers:
+        total += resolvers[r]
     res = 0.0
+    if total == 0:
+        return 0
+    
     for rate in rates:
-        res += float(str(rate[0]))
-    if res != 0:
-        count = 0
-        for rate in rates:
-            if rate > 0:
-                count += 1
-        return res/float(count)
-    else:
-        return res
+        res += rate['rate']*(float(resolver[rate['resolver']])/total)
+    return res
 
 def getDNSQuery(domain, tname):
     global cur
@@ -76,7 +78,7 @@ def getDNSQuery(domain, tname):
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (tname, domain, e))
         exit(1)
-
+    
     i = 0
     while i < len(queries)-1:
         dist = queries[i+1]['ts'] - queries[i]['ts']
@@ -84,8 +86,17 @@ def getDNSQuery(domain, tname):
             del(queries[i+1])
         else:
             i = i + 1
-    
-    return len(queries)
+    resolver = getResolvers()
+    count = dict()
+    for query in queries:
+        if query['orig_h'] in count:
+            tmp = count[query['orig_h']]
+            tmp = tmp + 1
+            count.update({query['orig_h']:tmp})
+        else
+            count.update({query['orig_h']:1})
+    print count
+    return count
 
 def getHTTPRequest(domain, tname):
     global cur
@@ -130,11 +141,13 @@ def main():
     domains = getDomain(rate_tname)
     for domain in domains:
         print 'Processing domain : %s' % domain
-        rate = getAverRate(domain, rate_tname)
-        dns_query = getDNSQuery(domain, dns_tname)
+        count = getDNSQuery(domain, dns_tname)
+        rate = getAverRate(domain, rate_tname, count)
         actual_req = getHTTPRequest(domain, http_tname)
         estimated = dns_query * rate
-
+        dns_query = 0
+        for c in count:
+            dns_query += count[c]
         try:
             cur.execute('INSERT INTO %s VALUES (\'%s\', %s, %s, %s, %s);' % (res_tname, domain, rate, dns_query, estimated, actual_req))
         except pg.DatabaseError, e:
