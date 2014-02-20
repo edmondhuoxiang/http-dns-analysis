@@ -93,7 +93,7 @@ def getHTTPRequest(domain, tname):
     data_to_process = tname[4:-6] 
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     try:
-        cur.execute('SELECT count(*) FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s ORDER BY ts ASC;' % (tname, domain, tw[0], tw[1]))
+        cur.execute('SELECT count(*) FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s;' % (tname, domain, tw[0], tw[1]))
         count = cur.fetchone()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (tname, domain, e))
