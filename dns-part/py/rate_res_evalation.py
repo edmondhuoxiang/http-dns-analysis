@@ -93,13 +93,13 @@ def getHTTPRequest(domain, tname):
     data_to_process = tname[4:-6] 
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     try:
-        cur.execute('SELECT count(*) FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s;' % (tname, domain, tw[0], tw[1]))
-        count = cur.fetchone()
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND ts < %s;' % (tname, domain, tw[0], tw[1]))
+        count = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (tname, domain, e))
         exit(1)
 
-    return int(count)
+    return len(count)
 
 def getTimeWindowOfDay(date, tz):
     timezone = pytz.timezone(tz)
@@ -136,7 +136,7 @@ def main():
         estimated = dns_query * rate
 
         try:
-            cur.execute('INSERT INTO %s VALUES (\'%s\', %s, %s, %s, %s);' % (tname, domain, rate, dns_query, estimated, actual_req))
+            cur.execute('INSERT INTO %s VALUES (\'%s\', %s, %s, %s, %s);' % (res_tname, domain, rate, dns_query, estimated, actual_req))
         except pg.DatabaseError, e:
             Log.error(e.pgerror)
             sys.exit(1)
