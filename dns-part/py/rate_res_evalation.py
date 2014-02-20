@@ -126,7 +126,7 @@ def main():
     data_to_process = '20130902'
     dns_tname = 'dns_' + data_to_process
     http_tname = 'log_' + data_to_process + '_rawts'
-    rate_tname = 'estimate_rate_20131001_v3'
+    rate_tname = 'estimate_rate_20131001_v2'
     res_tname = 'result_table'
     create_new_table = '''CREATE TABLE %s
     (domain character varying (256), rate numeric, dns_query int, estimated_request numeric, actual_request int);'''
