@@ -65,7 +65,7 @@ def getAverRate(domain, tname, resolvers):
         return 0
     
     for rate in rates:
-        if rate['resolver'] in resovlers:
+        if rate['resolver'] in resolvers:
             res += float(str(rate['rate']))*(float(str(resolvers[rate['resolver']]))/total)
     return res
 
