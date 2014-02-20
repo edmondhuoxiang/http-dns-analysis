@@ -77,7 +77,7 @@ def getDNSQuery(domain, tname):
         Log.error('%s : %s : %s' % (tname, domain, e))
         exit(1)
 
-    for i in range(0, len(queries)):
+    for i in range(0, len(queries)-1):
         dist = queries[i+1]['ts'] - queries[i]['ts']
         if dist < 1:
             del(queries[i+1])
