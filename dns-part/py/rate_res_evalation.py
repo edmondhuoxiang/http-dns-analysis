@@ -64,7 +64,7 @@ def getAverRate(domain, tname, resolvers):
         return 0
     
     for rate in rates:
-        res += rate['rate']*(float(resolver[rate['resolver']])/total)
+        res += rate['rate']*(float(resolvers[rate['resolver']])/total)
     return res
 
 def getDNSQuery(domain, tname):
