@@ -48,7 +48,7 @@ def getAverRate(domain, tname):
     global cur
     rates = []
     try:
-        cur.execute('SELECT DISTINCT rate FROM %s WHERE domain = \'%s\';', (tname[1:-1], domain))
+        cur.execute('SELECT DISTINCT rate FROM %s WHERE domain = \'%s\';' % (tname, domain))
         rates = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' %(tname, domain , e))
