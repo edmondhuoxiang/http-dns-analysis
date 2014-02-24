@@ -216,7 +216,7 @@ def estimate_day(tname, estimate_tname):
             domain_rates[domain] = []
         flag = False
         for i in range(0, len(query_rate)):
-            print 'Roselver : %s\t Rate : %f,%f\n' %(resolvers[i], query_rate[i][0], query_rate[i][1])
+            print 'Roselver : %s\t Rate : %s\n' %(resolvers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
         string = ''
         global_rate_1 = 0.0
