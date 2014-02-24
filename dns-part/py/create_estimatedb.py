@@ -15,6 +15,7 @@ import psycopg2 as pg
 import glob
 import gzip
 import logging as Log
+import pytz
 
 con = None
 r = redis.StrictRedis(host='localhost', port=6379,db=0)
