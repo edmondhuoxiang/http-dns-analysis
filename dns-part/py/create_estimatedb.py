@@ -45,7 +45,7 @@ def get_query_count(domain, tname):
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     try:
         cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND ttls >=0 AND rcode != \'-\' AND ts > %s AND ts < %s ORDER BY orig_h, ts ASC;' %(tname, domain, tw[0], tw[1]))
-        query = cur.fetchall()
+        res = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error(e.pgerror)
         sys.exit(1)
