@@ -244,6 +244,7 @@ def estimate_day(tname, estimate_tname):
             except pg.DatabaseError, e:
                 Log.error('%s : %s : %s' %(estimate_tname, domain, e.pgerror))
             count = int(str(cur.fetchone())[1:-1])
+            print count
 	    #print count
             estimate_vol_1 = global_rate_1 * 24 * 3600
             estimate_vol_2 = global_rate_2 * 24 * 3000
