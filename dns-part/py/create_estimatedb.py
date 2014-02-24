@@ -52,10 +52,9 @@ def get_query_count(domain, tname):
 
     index = 0
     while index < len(res)-1:
-        ts1 = float(str(res[index]['1'])[9:-2])
-        ts2 = float(str(es[index+1]['1'])[9:-2])
-        print ts1,ts2
-        if (ts_2-ts_1)<1:
+        ts1 = float(str(res[index][1]))
+        ts2 = float(str(es[index+1][1]))
+        if (ts2-ts1)<1:
             del(res[index+1])
         else:
             index = index + 1

@@ -236,7 +236,7 @@ def estimate_day(tname, estimate_tname):
 
             try:
                 #print 'SELECT count from %s where domain =\'%s\';)'%(estimate_tname, domain)
-                cur.execute('SELECT count from %s where domain =\'%s\';'%(estimate_tname, domain))
+                cur.execute('SELECT count from %s where domain =\'%s\';'%('log_20131001_rawts', domain))
             except pg.DatabaseError, e:
                 Log.error('%s : %s : %s' %(estimate_tname, domain, e.pgerror))
             count = int(str(cur.fetchone())[1:-1])
