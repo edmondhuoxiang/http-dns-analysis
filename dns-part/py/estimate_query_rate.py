@@ -146,23 +146,18 @@ class Record:
                 continue
 
 	    #print self.series[j]
-            estimate = 0
-            count = 0
-            del_num = 0
+            estimate_1 = 0
+            count_1 = 0
+            estimate_2 = 0
+            count_2 = 0
             index = 0
-            #while index < (len(self.series[j])-1):
-            #    num1 = int(self.series[j][index][0])
-            #    num2 = int(self.series[j][index+1][0])
-            #    ttl = self.series[j][index][1]
-            #    if ttl < 0:
-            #        del self.series[j][index]
-            #        del_num = del_num + 1
-            #        continue
-            #    if num1 == num2:
-            #        del self.series[j][index+1]
-            #        del_num = del_num + 1
-            #        continue 
-            #    index = index +1
+            while index < (len(self.series[j])-1):
+                num1 = int(self.series[j][index][0])
+                num2 = int(self.series[j][index+1][0])
+                if num1 == num2:
+                    del self.series[j][index+1]
+                else:
+                    index = index +1
 	    #pdb.set_trace()
             flag = False
             for i in range(0, len(self.series[j])-1):
@@ -170,30 +165,34 @@ class Record:
                 ts_0 = int(self.series[j][i][0])
                 ttl = int(self.series[j][i][1])
 
-                delta = ts_1 - (ts_0 + ttl)
+                delta_1 = ts_1 - (ts_0 + ttl)
+                delta_2 = ts_1 - ts_0
 
-                if delta < self.max_ttl:
-                    delta_x = ts_1 - ts_0
-                    if delta_x >= 0:
-                        delta = delta_x
-                    else:
-                        print "Warning! Queries arriving faster than TTL should allow"
-                        print self.domain, ts_1, ts_0, ts_1-ts_0, self.max_ttl
-                        result.append(-1)
-                        flag = True
-                        Log.error("Warning! Queries arriving faster than TTL should allow")
-                        Log.error(self.domain)
-                        break
-                estimate += delta
-                count += 1
+                if delta_1 < 0 or delta_2 < 0:
+                    print "Warning! Queries arriving faster than TTL should allow"
+                    print self.domain, ts_1, ts_0, ts_1-ts_0, self.max_ttl
+                    result.append(-1)
+                    flag = True
+                    Log.error("Warning! Queries arriving faster than TTL should allow")
+                    Log.error(self.domain)
+                    break
+                estimate_1 += delta_1
+                estimate_2 += delta_2
+                count_1 += 1
+                count_2 += 2
             if flag:
                 continue
             else:
-                if estimate == 0:
-                    print 'estimate == 0'
-                    result.append(-2)
+                res = (0.0,0.0)
+                if estimate_1 == 0:
+                    res[0] = -2
                 else:
-                    result.append(count/float(estimate))
+                    res[0] = float(count_1)/float(estimate_1)
+                if estimate_2 == 0:
+                    res[1] == -2
+                else:
+                    res[1] = float(count_2)/float(estimate_2)
+                result.append(res)
         return result
 
 def estimate_day(tname, estimate_tname):
@@ -220,15 +219,17 @@ def estimate_day(tname, estimate_tname):
             print 'Roselver : %s\t Rate : %f\n' %(resolvers[i], query_rate[i])
             domain_rates[domain].append((resolvers[i], query_rate[i]))
         string = ''
-        global_rate = 0.0
+        global_rate_1 = 0.0
+        global_rate_2 = 0.0
         for i in range(0, len(query_rate)):
-            if query_rate[i] > 0 and flag == False:
+            if (query_rate[i][0] > 0 and query_rate[i][1]> 0 )and flag == False:
                 print 'writing to file...'
                 string += domain
                 flag = True
-            if query_rate[i] > 0:
-                string += '\t'+resolvers[i]+','+str(query_rate[i])
-                global_rate = global_rate + query_rate[i]
+            if query_rate[i][0] > 0 and query_rate[i][1] > 0:
+                string += '\t'+resolvers[i]+','+str(query_rate[i][0])+','+str(query_rate[i][1])
+                global_rate_1 = global_rate_1 + query_rate[i][0]
+                global_rate_2 = global_rate_2 + query_rate[i][1]
 	string += '\n'
         if flag == True:
             output.write(string)
@@ -244,7 +245,7 @@ def estimate_day(tname, estimate_tname):
             distance = abs(estimate_vol - count)
 
             try:
-                cur.execute('UPDATE %s SET rate = %f, estimated_vol = %f, distance = %f where domain = \'%s\';' %(estimate_tname, global_rate, estimate_vol, distance, domain))
+                cur.execute('UPDATE %s SET rate_1 = %f, rate_2 = %f, estimated_vol = %f, distance = %f where domain = \'%s\';' %(estimate_tname, global_rate_1, global_rate_2, estimate_vol, distance, domain))
             except pg.DatabaseError, e:
                 Log.error('%s : %s' %(estimate_tname, e))
     rates = domain_rates.items()
