@@ -53,7 +53,7 @@ def get_query_count(domain, tname):
     index = 0
     while index < len(res)-1:
         ts1 = float(str(res[index][1]))
-        ts2 = float(str(es[index+1][1]))
+        ts2 = float(str(res[index+1][1]))
         if (ts2-ts1)<1:
             del(res[index+1])
         else:
@@ -72,7 +72,7 @@ def insert(domains, tname, estimate_tname):
 
 def main():
     create_new_table = '''CREATE TABLE %s
-    (id serial primary key NOT NULL, domain character varying(256), count int, rate_1 numeric, rate_2 numeric, estimated_vol numeric, distance integer);'''
+    (id serial primary key NOT NULL, domain character varying(256), count int, rate_1 numeric, rate_2 numeric, estimated_vol_1 numeric, estimated_vol_2, real_vol integer);'''
     data_to_process = '20131001'
     estimate_tname = 'estimate_' + data_to_process
     dns_tname = 'dns_' + data_to_process
