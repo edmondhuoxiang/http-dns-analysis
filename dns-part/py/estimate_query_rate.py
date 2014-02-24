@@ -183,16 +183,16 @@ class Record:
             if flag:
                 continue
             else:
-                res = (0.0,0.0)
+                
                 if estimate_1 == 0:
-                    res[0] = -2
+                    res1 = -2
                 else:
-                    res[0] = float(count_1)/float(estimate_1)
+                    res1 = float(count_1)/float(estimate_1)
                 if estimate_2 == 0:
-                    res[1] == -2
+                    res2 == -2
                 else:
-                    res[1] = float(count_2)/float(estimate_2)
-                result.append(res)
+                    res2 = float(count_2)/float(estimate_2)
+                result.append((res1,res2))
         return result
 
 def estimate_day(tname, estimate_tname):
