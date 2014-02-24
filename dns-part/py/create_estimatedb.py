@@ -41,7 +41,7 @@ def getTimeWindowOfDay(date, tz):
     return [time.mktime(date_begin_localized.timetuple()), time.mktime(date_end_localized.timetuple())]
 
 def get_query_count(domain, tname):
-    data_to_process = domain[:-8]
+    data_to_process = tname[:-8]
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     try:
         cur.execute('SELECT * FROM %f WHERE query = \'%s\' AND ttls >=0 AND rcode != \'-\' AND ts > %s AND ts < %s ORDER BY orig_h AND ts ASC;' %(tname, domain, tw[0], tw[1]))
@@ -62,6 +62,7 @@ def get_query_count(domain, tname):
 
 def insert(domains, tname, estimate_tname):
     for domain in domains:
+        print domain
         count = get_query_count(domain, tname)
         try: 
             cur.execute('INSERT INTO %s (domain, count) values(\'%s\', %s);'%(estimate_tname, domain,count))
