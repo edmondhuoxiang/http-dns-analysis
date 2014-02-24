@@ -66,7 +66,7 @@ def getDomainsFromDB(tname, dev):
         min_index = 10000-dev
         max_index = 10000+dev
     try:
-        cur.execute('SELECT domain from %s WHERE id > %d and id < %d;' % (tname, min_index, max_index))
+        cur.execute('SELECT domain from %s;' % (tname))
         domains = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(tname, e))
@@ -241,11 +241,11 @@ def estimate_day(tname, estimate_tname):
                 Log.error('%s : %s : %s' %(estimate_tname, domain, e.pgerror))
             count = int(str(cur.fetchone())[1:-1])
 	    #print count
-            estimate_vol = global_rate * 24 * 3600
-            distance = abs(estimate_vol - count)
+            estimate_vol_1 = global_rate_1 * 24 * 3600
+            estimate_vol_2 = global_rate_2 * 24 * 3000
 
             try:
-                cur.execute('UPDATE %s SET rate_1 = %f, rate_2 = %f, estimated_vol = %f, distance = %f where domain = \'%s\';' %(estimate_tname, global_rate_1, global_rate_2, estimate_vol, distance, domain))
+                cur.execute('UPDATE %s SET rate_1 = %f, rate_2 = %f, estimated_vol_1 = %f, estimate_vol_2 = %f, real_vol = %d where domain = \'%s\';' %(estimate_tname, global_rate_1, global_rate_2, estimate_vol_1, estimate_vol_2, count, domain))
             except pg.DatabaseError, e:
                 Log.error('%s : %s' %(estimate_tname, e))
     rates = domain_rates.items()
