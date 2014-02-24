@@ -192,7 +192,8 @@ class Record:
                     res2 == -2
                 else:
                     res2 = float(count_2)/float(estimate_2)
-                result.append((res1,res2))
+                res = (res1,res2)
+                result.append(res)
         return result
 
 def estimate_day(tname, estimate_tname):
@@ -211,7 +212,8 @@ def estimate_day(tname, estimate_tname):
         domain = r.domain
         resolvers = r.resolvers
         query_rate = r.estimate_rate()
-
+        print query_rate
+        print *****
         if domain not in domain_rates:
             domain_rates[domain] = []
         flag = False
