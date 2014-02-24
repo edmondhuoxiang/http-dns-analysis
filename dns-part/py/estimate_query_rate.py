@@ -142,7 +142,8 @@ class Record:
         for j in range(0, len(self.resolvers)):
             if len(self.series[j]) < MIN_SERIES_SIZE:
                 print 'Length of series is %d less than MIN_SERIES_SIZE' % len(self.series[j])
-                result.append(-1)
+                res = (-1,-1)
+                result.append(res)
                 continue
 
 	    #print self.series[j]
@@ -152,9 +153,9 @@ class Record:
             count_2 = 0
             index = 0
             while index < (len(self.series[j])-1):
-                num1 = int(self.series[j][index][0])
-                num2 = int(self.series[j][index+1][0])
-                if num1 == num2:
+                num1 = float(self.series[j][index][0])
+                num2 = float(self.series[j][index+1][0])
+                if num2-num1 < 1:
                     del self.series[j][index+1]
                 else:
                     index = index +1
@@ -171,7 +172,8 @@ class Record:
                 if delta_1 < 0 or delta_2 < 0:
                     print "Warning! Queries arriving faster than TTL should allow"
                     print self.domain, ts_1, ts_0, ts_1-ts_0, self.max_ttl
-                    result.append(-1)
+                    res = (-1, -1)
+                    result.append(res)
                     flag = True
                     Log.error("Warning! Queries arriving faster than TTL should allow")
                     Log.error(self.domain)
