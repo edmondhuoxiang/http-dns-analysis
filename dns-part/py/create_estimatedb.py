@@ -72,7 +72,7 @@ def insert(domains, tname, estimate_tname):
 
 def main():
     create_new_table = '''CREATE TABLE %s
-    (id serial primary key NOT NULL, domain character varying(256), count int, rate_1 numeric, rate_2 numeric, estimated_vol_1 numeric, estimated_vol_2, real_vol integer);'''
+    (id serial primary key NOT NULL, domain character varying(256), count int, rate_1 numeric, rate_2 numeric, estimated_vol_1 numeric, estimated_vol_2 numeric, real_vol integer);'''
     data_to_process = '20131001'
     estimate_tname = 'estimate_' + data_to_process
     dns_tname = 'dns_' + data_to_process
