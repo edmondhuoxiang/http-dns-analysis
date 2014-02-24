@@ -213,7 +213,7 @@ def estimate_day(tname, estimate_tname):
         resolvers = r.resolvers
         query_rate = r.estimate_rate()
         print query_rate
-        print *****
+        print '*****'
         if domain not in domain_rates:
             domain_rates[domain] = []
         flag = False
