@@ -45,7 +45,7 @@ def getDomains(tname, http_name):
         exit(1)
     res = []
     for domain in domains:
-        res.append(str(domain[2:-2]))
+        res.append(str(domain)[2:-2])
     return res
 
 def getdns(domain, dns_tname):
@@ -54,7 +54,7 @@ def getdns(domain, dns_tname):
     queries = []
     global cur
     try:
-        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND ts > %s AND ts < %s AND ttl > 0 OEDER BY ts, orig_h ASC;' % (dns_tname, domain, tw[0], tw[1]))
+        cur.execute('SELECT * FROM %s WHERE query = \'%s\' AND ts > %s AND ts < %s AND ttls > 0 ORDER BY ts, orig_h ASC;' % (dns_tname, domain, tw[0], tw[1]))
         queries = cur.fetchall()
     except pg.DatabaseError, e:
         Log.error('%s : %s' %(dns_tname, e))
@@ -75,7 +75,7 @@ def gethttp(domain, http_name, time):
     global cur
     row = []
     try:
-        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND  ts < %s + 5 ORDER BY ts limit 1;')
+        cur.execute('SELECT * FROM %s WHERE host = \'%s\' AND ts > %s AND  ts < %s + 5 ORDER BY ts limit 1;' % (http_name, domain, time, time))
         row = cur.fetchone()
     except pg.DatabaseError, e:
         Log.error('%s : %s : %s' % (http_name, domain, e))
@@ -85,8 +85,8 @@ def gethttp(domain, http_name, time):
 
 def getTimeWindowOfDay(date, tz):
     timezone = pytz.timezone(tz)
-    begin = date + '0:0:0'
-    end = date + '23:59:59'
+    begin = date + ' 0:0:0'
+    end = date + ' 23:59:59'
     date_begin = datetime.strptime(begin, "%Y%m%d %H:%M:%S")
     date_end = datetime.strptime(end, "%Y%m%d %H:%M:%S")
     date_begin_localized = timezone.localize(date_begin, is_dst=None)
@@ -102,11 +102,11 @@ def main():
     print 'tw : %s' % tw
 
     create_new_table = '''CREATE TABLE %s
-    (domain character varying(256), dns_ts numeric, resolver inet, http_ts numeric, user inet);'''
-    table = 'resolver-user'
+    (domain character varying(256), dns_ts numeric, resolver inet, http_ts numeric, orig_h inet);'''
+    table = 'resolveri_user'
     try:
         print 'Creating table %s' % table
-        cur.execute('DROP TABLE IF EXISTS %s;' table)
+        cur.execute('DROP TABLE IF EXISTS %s;' % table)
         cur.execute(create_new_table % table)
     except pg.DatabaseError, e:
         Log.error('Creating new table %s failed: %s' % (table, e.pgerror))
@@ -131,10 +131,10 @@ def main():
             request = gethttp(domain, http_tname, ts)
             if request != None:
                 print request
-                time = request['ts']
+                time = str(request['ts'])
                 user = request['orig_h']
                 try:
-                    cur.execute(insert % (domain, ts, resovler, time, user))
+                    cur.execute(insert % (table, domain, ts, resolver, time, user))
                 except pg.DatabaseError, e:
                     Log.error(e.pgerror)
                     sys.exit(1)
