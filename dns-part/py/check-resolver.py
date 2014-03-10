@@ -94,7 +94,7 @@ def getTimeWindowOfDay(date, tz):
     return [time.mktime(date_begin_localized.timetuple()), time.mktime(date_end_localized.timetuple())]
 
 
-def main()::
+def main():
     data_to_process = '20131001'
     tw = getTimeWindowOfDay(data_to_process, 'US/Eastern')
     dns_tname = 'dns_'+data_to_process
