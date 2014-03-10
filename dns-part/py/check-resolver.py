@@ -91,7 +91,7 @@ def getTimeWindowOfDay(date, tz):
     date_end = datetime.strptime(end, "%Y%m%d %H:%M:%S")
     date_begin_localized = timezone.localize(date_begin, is_dst=None)
     date_end_localized = timezone.localize(date_end, is_dst=None)
-    return [time.mktime(date_begin_localized.timetuple()), time.mktime(date_end_localized.ti    metuple())]
+    return [time.mktime(date_begin_localized.timetuple()), time.mktime(date_end_localized.timetuple())]
 
 
 def main()::
